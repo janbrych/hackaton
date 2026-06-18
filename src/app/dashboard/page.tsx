@@ -9,11 +9,12 @@ import {
 } from "recharts";
 import {
   Zap, ChevronLeft, TrendingUp, Factory, Leaf,
-  DollarSign, Activity, BarChart3, ArrowUpRight
+  DollarSign, Activity, BarChart3, ArrowUpRight, Atom, Sun, Wind, Droplets, Flame, Wifi, WifiOff
 } from "lucide-react";
 import { REGIONS_WITH_CALCULATIONS } from "@/data/czechRegions";
 import { optimizePlantNetwork, type NetworkOptimization } from "@/lib/optimizer";
 import { formatCZK, formatMWh, formatNumber } from "@/lib/utils";
+import type { LiveGeneration } from "@/lib/energyApi";
 
 const NETWORK = optimizePlantNetwork(45);
 
@@ -73,13 +74,151 @@ const CUSTOM_TOOLTIP_STYLE = {
   fontSize: "12px",
 };
 
+// Generation source config for rendering
+const GEN_SOURCES: {
+  key: keyof LiveGeneration;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  color: string;
+  barColor: string;
+  maxMW: number;
+}[] = [
+  { key: 'nuclear',  label: 'Jaderná',   icon: Atom,     color: 'text-violet-400', barColor: 'bg-violet-500',  maxMW: 4500 },
+  { key: 'thermal',  label: 'Tepelná',   icon: Flame,    color: 'text-orange-400', barColor: 'bg-orange-500',  maxMW: 4000 },
+  { key: 'solar',    label: 'Solární',   icon: Sun,      color: 'text-yellow-400', barColor: 'bg-yellow-400',  maxMW: 2500 },
+  { key: 'wind',     label: 'Větrná',    icon: Wind,     color: 'text-cyan-400',   barColor: 'bg-cyan-400',    maxMW: 800  },
+  { key: 'hydro',    label: 'Vodní',     icon: Droplets, color: 'text-blue-400',   barColor: 'bg-blue-400',    maxMW: 600  },
+];
+
+function LiveGenerationPanel({ data }: { data: LiveGeneration | null }) {
+  const isPositive = data ? data.surplus >= 0 : true;
+  const surplusAbs = data ? Math.abs(data.surplus) : 0;
+
+  return (
+    <div className="card-glass rounded-2xl p-6">
+      {/* Panel header */}
+      <div className="flex items-center justify-between mb-5">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center">
+            <Zap className="w-5 h-5 text-cyan-400" />
+          </div>
+          <div>
+            <h3 className="font-bold text-lg leading-tight">Živá data ČEPS</h3>
+            <p className="text-xs text-slate-500">Výroba elektřiny v České republice</p>
+          </div>
+        </div>
+        {/* Live / simulation badge */}
+        <div className="flex items-center gap-2">
+          {data ? (
+            data.isLive ? (
+              <span className="flex items-center gap-1.5 px-3 py-1 bg-green-500/10 border border-green-500/30 rounded-full text-xs font-semibold text-green-400">
+                <Wifi className="w-3 h-3" />
+                ENTSO-E Live
+              </span>
+            ) : (
+              <span className="flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 border border-amber-500/30 rounded-full text-xs font-semibold text-amber-400">
+                <WifiOff className="w-3 h-3" />
+                Simulace
+              </span>
+            )
+          ) : (
+            <span className="px-3 py-1 bg-slate-700/50 rounded-full text-xs text-slate-500 animate-pulse">
+              Načítání…
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Grid balance banner */}
+      {data && (
+        <div className={`mb-5 p-4 rounded-xl border flex items-center justify-between ${
+          isPositive
+            ? 'bg-green-500/5 border-green-500/25'
+            : 'bg-red-500/5 border-red-500/25'
+        }`}>
+          <div>
+            <div className="text-xs text-slate-400 mb-0.5">Bilance sítě</div>
+            <div className={`text-2xl font-black ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
+              {isPositive ? '+' : '−'}{surplusAbs.toLocaleString('cs-CZ')} MW
+            </div>
+          </div>
+          <div className="text-right">
+            <div className="text-xs text-slate-400 mb-0.5">Výroba / Spotřeba</div>
+            <div className="text-sm font-semibold text-slate-300">
+              {data.total.toLocaleString('cs-CZ')} MW / {data.consumption.toLocaleString('cs-CZ')} MW
+            </div>
+            <div className={`text-xs font-semibold mt-0.5 ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
+              {isPositive ? 'Přebytek' : 'Deficit'}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Generation source bars */}
+      <div className="space-y-3">
+        {GEN_SOURCES.map(({ key, label, icon: Icon, color, barColor, maxMW }) => {
+          const mw = data ? (data[key] as number) : 0;
+          const pct = data ? Math.min(100, (mw / maxMW) * 100) : 0;
+          const share = data ? Math.round((mw / data.total) * 100) : 0;
+
+          return (
+            <div key={key} className="flex items-center gap-3">
+              <Icon className={`w-4 h-4 flex-shrink-0 ${color}`} />
+              <div className="w-16 text-xs text-slate-400 flex-shrink-0">{label}</div>
+              <div className="flex-1 h-2 bg-slate-800 rounded-full overflow-hidden">
+                <div
+                  className={`h-full ${barColor} rounded-full transition-all duration-700`}
+                  style={{ width: data ? `${pct}%` : '0%' }}
+                />
+              </div>
+              <div className="w-20 text-right text-xs font-semibold text-slate-300 flex-shrink-0">
+                {data ? `${mw.toLocaleString('cs-CZ')} MW` : '—'}
+              </div>
+              <div className="w-8 text-right text-xs text-slate-500 flex-shrink-0">
+                {data ? `${share}%` : ''}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Timestamp */}
+      {data && (
+        <div className="mt-4 pt-4 border-t border-slate-800 text-xs text-slate-600">
+          Aktualizováno: {new Date(data.timestamp).toLocaleString('cs-CZ')}
+          {' · '}obnovení za 60 s
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function DashboardPage() {
   const [activeRegion, setActiveRegion] = useState(REGIONS_WITH_CALCULATIONS[2]); // JHC
   const [liveTime, setLiveTime] = useState(new Date());
+  const [liveGeneration, setLiveGeneration] = useState<LiveGeneration | null>(null);
 
   useEffect(() => {
     const t = setInterval(() => setLiveTime(new Date()), 1000);
     return () => clearInterval(t);
+  }, []);
+
+  useEffect(() => {
+    const fetchGeneration = async () => {
+      try {
+        const res = await fetch('/api/energy-live?type=generation');
+        if (res.ok) {
+          const data: LiveGeneration = await res.json();
+          setLiveGeneration(data);
+        }
+      } catch {
+        // keep previous data on error
+      }
+    };
+
+    fetchGeneration();
+    const interval = setInterval(fetchGeneration, 60_000);
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -139,6 +278,9 @@ export default function DashboardPage() {
             color="text-amber-400"
           />
         </div>
+
+        {/* Live CEPS generation panel */}
+        <LiveGenerationPanel data={liveGeneration} />
 
         {/* Charts row */}
         <div className="grid md:grid-cols-2 gap-6">
