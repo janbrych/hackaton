@@ -80,12 +80,20 @@ export default function HomePage() {
             <Link href="/calculator" className="hover:text-cyan-400 transition-colors">Kalkulačka</Link>
             <Link href="/ai" className="hover:text-cyan-400 transition-colors">AI Analýza</Link>
           </div>
-          <Link
-            href="/calculator"
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-green-500 text-sm font-semibold text-black hover:opacity-90 transition-opacity"
-          >
-            Spočítat zisk <ChevronRight className="w-4 h-4" />
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/register"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg border border-cyan-500/50 text-sm font-semibold text-cyan-400 hover:bg-cyan-500/10 transition-all"
+            >
+              Registrovat se
+            </Link>
+            <Link
+              href="/calculator"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-green-500 text-sm font-semibold text-black hover:opacity-90 transition-opacity"
+            >
+              Spočítat zisk <ChevronRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
       </nav>
 
