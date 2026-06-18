@@ -1,12 +1,9 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import {
-  Calculator, Zap, MapPin, TrendingUp, ChevronLeft,
-  Home, Building2, Info, CheckCircle
-} from "lucide-react";
+import { Calculator, Zap, MapPin, TrendingUp, ChevronLeft, Home, Building2, Info, CheckCircle } from "lucide-react";
 import { REGIONS_WITH_CALCULATIONS } from "@/data/czechRegions";
 import { formatCZK } from "@/lib/utils";
 
@@ -21,7 +18,6 @@ interface ROIResult {
 function CalculatorContent() {
   const searchParams = useSearchParams();
   const initialType = searchParams.get("type") === "business" ? "business" : "household";
-
   const [userType, setUserType] = useState<"household" | "business">(initialType);
   const [regionId, setRegionId] = useState("JHC");
   const [monthlySurplus, setMonthlySurplus] = useState(300);
@@ -39,280 +35,200 @@ function CalculatorContent() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ regionId, monthlySurplusKwh: monthlySurplus, userType }),
       });
-      const data = await res.json();
-      setResult(data);
+      setResult(await res.json());
       setCalculated(true);
     } finally {
       setLoading(false);
     }
   }
 
-  const SURPLUS_PRESETS = userType === "household"
-    ? [100, 200, 400, 600]
-    : [1000, 5000, 20000, 100000];
+  const PRESETS = userType === "household" ? [100, 200, 400, 600] : [1000, 5000, 20000, 100000];
+  const card: React.CSSProperties = { background: "#fff", border: "1px solid #e2e8f0", borderRadius: 16, padding: 24, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" };
 
   return (
-    <div className="gradient-bg grid-lines min-h-screen bg-gray-50 pt-8 pb-16 px-4">
-      {/* Nav */}
-      <div className="max-w-4xl mx-auto mb-8 flex items-center gap-4">
-        <Link href="/" className="flex items-center gap-2 text-gray-400 hover:text-blue-600 transition-colors text-sm font-medium">
-          <ChevronLeft className="w-4 h-4" />
-          Zpět na hlavní stránku
-        </Link>
-        <span className="text-gray-300">/</span>
-        <span className="text-gray-500 text-sm">Kalkulačka zisku</span>
+    <div style={{ minHeight: "100vh", background: "#f8fafc", paddingTop: 32, paddingBottom: 64, paddingLeft: 24, paddingRight: 24 }}>
+      {/* breadcrumb */}
+      <div style={{ maxWidth: 900, margin: "0 auto 32px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <Link href="/" style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 14, fontWeight: 500, color: "#64748b", textDecoration: "none" }}>
+            <ChevronLeft style={{ width: 16, height: 16 }} /> Zpět na hlavní stránku
+          </Link>
+          <span style={{ color: "#e2e8f0" }}>/</span>
+          <span style={{ fontSize: 14, color: "#94a3b8" }}>Kalkulačka zisku</span>
+        </div>
       </div>
 
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-blue-200 bg-blue-50 text-blue-600 text-sm font-medium mb-6">
-            <Calculator className="w-4 h-4" />
-            Kalkulačka zisku
+      <div style={{ maxWidth: 900, margin: "0 auto" }}>
+        {/* heading */}
+        <div style={{ textAlign: "center", marginBottom: 40 }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 16px", borderRadius: 999, border: "1px solid #bfdbfe", background: "#eff6ff", color: "#2563eb", fontSize: 13, fontWeight: 500, marginBottom: 20 }}>
+            <Calculator style={{ width: 14, height: 14 }} /> Kalkulačka zisku
           </div>
-          <h1 className="text-4xl md:text-5xl font-black mb-4 text-gray-900">
-            Kolik vydělají vaše
-            <br />
-            <span className="text-gradient-primary">přebytky energie?</span>
+          <h1 style={{ fontSize: "clamp(28px, 4vw, 46px)", fontWeight: 900, color: "#0f172a", letterSpacing: "-0.02em", marginBottom: 12, lineHeight: 1.1 }}>
+            Kolik vydělají vaše<br /><span className="text-gradient-primary">přebytky energie?</span>
           </h1>
-          <p className="text-gray-500 text-lg max-w-2xl mx-auto">
+          <p style={{ fontSize: 16, color: "#64748b", maxWidth: 520, margin: "0 auto" }}>
             Výkupní cena se liší podle lokality – v regionech s vysokou poptávkou dostanete za kWh více.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          {/* Left: Form */}
-          <div className="space-y-5">
-            {/* User type */}
-            <div className="card-glass rounded-2xl p-6">
-              <h3 className="font-bold text-lg mb-4 flex items-center gap-2 text-gray-900">
-                <Info className="w-5 h-5 text-blue-600" />
-                Typ subjektu
-              </h3>
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  onClick={() => setUserType("household")}
-                  className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${
-                    userType === "household"
-                      ? "border-blue-500 bg-blue-50 text-blue-600"
-                      : "border-gray-200 text-gray-400 hover:border-gray-300 bg-white"
-                  }`}
-                >
-                  <Home className="w-7 h-7" />
-                  <span className="font-semibold text-sm">Domácnost</span>
-                  <span className="text-xs opacity-70">FVE, tepelné čerp.</span>
-                </button>
-                <button
-                  onClick={() => setUserType("business")}
-                  className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${
-                    userType === "business"
-                      ? "border-blue-500 bg-blue-50 text-blue-600"
-                      : "border-gray-200 text-gray-400 hover:border-gray-300 bg-white"
-                  }`}
-                >
-                  <Building2 className="w-7 h-7" />
-                  <span className="font-semibold text-sm">Firma / Provoz</span>
-                  <span className="text-xs opacity-70">Výrobní přebytky</span>
-                </button>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, alignItems: "start" }}>
+          {/* LEFT: form */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            {/* user type */}
+            <div style={card}>
+              <div style={{ fontWeight: 700, fontSize: 16, color: "#0f172a", marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
+                <Info style={{ width: 18, height: 18, color: "#2563eb" }} /> Typ subjektu
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                {[
+                  { v: "household" as const, label: "Domácnost", sub: "FVE, tepelné čerp.", Icon: Home },
+                  { v: "business" as const, label: "Firma / Provoz", sub: "Výrobní přebytky", Icon: Building2 },
+                ].map(({ v, label, sub, Icon }) => (
+                  <button key={v} onClick={() => setUserType(v)} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, padding: 16, borderRadius: 12, border: `2px solid ${userType === v ? "#2563eb" : "#e2e8f0"}`, background: userType === v ? "#eff6ff" : "#fff", cursor: "pointer" }}>
+                    <Icon style={{ width: 26, height: 26, color: userType === v ? "#2563eb" : "#94a3b8" }} />
+                    <span style={{ fontWeight: 600, fontSize: 13, color: userType === v ? "#2563eb" : "#374151" }}>{label}</span>
+                    <span style={{ fontSize: 11, color: "#94a3b8" }}>{sub}</span>
+                  </button>
+                ))}
               </div>
             </div>
 
-            {/* Region */}
-            <div className="card-glass rounded-2xl p-6">
-              <h3 className="font-bold text-lg mb-4 flex items-center gap-2 text-gray-900">
-                <MapPin className="w-5 h-5 text-blue-600" />
-                Kraj
-              </h3>
-              <select
-                value={regionId}
-                onChange={(e) => setRegionId(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200 transition-all"
-              >
-                {REGIONS_WITH_CALCULATIONS.map((r) => (
-                  <option key={r.id} value={r.id}>
-                    {r.name} — skóre {r.plantFeasibility}/100
-                  </option>
+            {/* region */}
+            <div style={card}>
+              <div style={{ fontWeight: 700, fontSize: 16, color: "#0f172a", marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
+                <MapPin style={{ width: 18, height: 18, color: "#2563eb" }} /> Kraj
+              </div>
+              <select value={regionId} onChange={e => setRegionId(e.target.value)}
+                style={{ width: "100%", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 10, padding: "10px 14px", fontSize: 14, color: "#0f172a", outline: "none" }}>
+                {REGIONS_WITH_CALCULATIONS.map(r => (
+                  <option key={r.id} value={r.id}>{r.name} — skóre {r.plantFeasibility}/100</option>
                 ))}
               </select>
               {region && (
-                <div className="mt-3 grid grid-cols-3 gap-2 text-center">
-                  <div className="bg-blue-50 border border-blue-100 rounded-lg p-2">
-                    <div className="text-blue-600 font-bold text-sm">{region.annualSurplus?.toLocaleString("cs-CZ")} MWh</div>
-                    <div className="text-xs text-gray-400">Přebytek/rok</div>
-                  </div>
-                  <div className="bg-emerald-50 border border-emerald-100 rounded-lg p-2">
-                    <div className="text-emerald-600 font-bold text-sm">{region.renewableCapacity} MW</div>
-                    <div className="text-xs text-gray-400">OZE kapacita</div>
-                  </div>
-                  <div className="bg-violet-50 border border-violet-100 rounded-lg p-2">
-                    <div className="text-violet-600 font-bold text-sm">{region.plantFeasibility}/100</div>
-                    <div className="text-xs text-gray-400">Skóre lokality</div>
-                  </div>
+                <div style={{ marginTop: 12, display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+                  {[
+                    { v: `${region.annualSurplus?.toLocaleString("cs-CZ")} MWh`, l: "Přebytek/rok", c: "#2563eb", bg: "#eff6ff" },
+                    { v: `${region.renewableCapacity} MW`, l: "OZE kapacita", c: "#10b981", bg: "#ecfdf5" },
+                    { v: `${region.plantFeasibility}/100`, l: "Skóre lokality", c: "#7c3aed", bg: "#f5f3ff" },
+                  ].map(({ v, l, c, bg }) => (
+                    <div key={l} style={{ background: bg, borderRadius: 8, padding: "8px 10px", textAlign: "center" }}>
+                      <div style={{ fontWeight: 700, fontSize: 13, color: c }}>{v}</div>
+                      <div style={{ fontSize: 11, color: "#94a3b8" }}>{l}</div>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
 
-            {/* Monthly surplus */}
-            <div className="card-glass rounded-2xl p-6">
-              <h3 className="font-bold text-lg mb-4 flex items-center gap-2 text-gray-900">
-                <Zap className="w-5 h-5 text-blue-600" />
-                Měsíční přebytek energie
-              </h3>
-              <div className="flex items-center gap-4 mb-4">
-                <input
-                  type="range"
+            {/* surplus slider */}
+            <div style={card}>
+              <div style={{ fontWeight: 700, fontSize: 16, color: "#0f172a", marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
+                <Zap style={{ width: 18, height: 18, color: "#2563eb" }} /> Měsíční přebytek energie
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+                <input type="range"
                   min={userType === "household" ? 50 : 500}
                   max={userType === "household" ? 1000 : 200000}
                   step={userType === "household" ? 50 : 500}
                   value={monthlySurplus}
-                  onChange={(e) => setMonthlySurplus(Number(e.target.value))}
-                  className="flex-1 accent-blue-600"
-                />
-                <div className="w-28 text-right">
-                  <span className="text-xl font-bold text-blue-600">
-                    {monthlySurplus.toLocaleString("cs-CZ")}
-                  </span>
-                  <span className="text-gray-400 text-sm"> kWh</span>
+                  onChange={e => setMonthlySurplus(Number(e.target.value))}
+                  style={{ flex: 1, accentColor: "#2563eb" }} />
+                <div style={{ textAlign: "right", minWidth: 90 }}>
+                  <span style={{ fontSize: 20, fontWeight: 700, color: "#2563eb" }}>{monthlySurplus.toLocaleString("cs-CZ")}</span>
+                  <span style={{ fontSize: 13, color: "#64748b" }}> kWh</span>
                 </div>
               </div>
-              <div className="flex gap-2 flex-wrap">
-                {SURPLUS_PRESETS.map((v) => (
-                  <button
-                    key={v}
-                    onClick={() => setMonthlySurplus(v)}
-                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all border ${
-                      monthlySurplus === v
-                        ? "bg-blue-50 text-blue-600 border-blue-400"
-                        : "bg-white text-gray-500 border-gray-200 hover:border-gray-300"
-                    }`}
-                  >
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                {PRESETS.map(v => (
+                  <button key={v} onClick={() => setMonthlySurplus(v)}
+                    style={{ padding: "6px 12px", borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: "pointer", border: `1px solid ${monthlySurplus === v ? "#2563eb" : "#e2e8f0"}`, background: monthlySurplus === v ? "#eff6ff" : "#fff", color: monthlySurplus === v ? "#2563eb" : "#64748b" }}>
                     {v.toLocaleString("cs-CZ")} kWh
                   </button>
                 ))}
               </div>
             </div>
 
-            <button
-              onClick={handleCalculate}
-              disabled={loading}
-              className="w-full py-4 rounded-xl bg-blue-600 text-white font-bold text-lg hover:bg-blue-700 transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-blue-200"
-            >
-              {loading ? (
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : (
-                <Calculator className="w-5 h-5" />
-              )}
+            <button onClick={handleCalculate} disabled={loading}
+              style={{ padding: "16px", borderRadius: 12, background: "#2563eb", color: "#fff", fontWeight: 700, fontSize: 16, border: "none", cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.7 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, boxShadow: "0 4px 16px rgba(37,99,235,0.2)" }}>
+              {loading ? <div style={{ width: 18, height: 18, border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} /> : <Calculator style={{ width: 18, height: 18 }} />}
               {loading ? "Počítám..." : "Vypočítat zisk"}
             </button>
           </div>
 
-          {/* Right: Results */}
+          {/* RIGHT: results */}
           <div>
             {!calculated ? (
-              <div className="card-glass rounded-2xl p-8 h-full flex flex-col items-center justify-center text-center">
-                <div className="w-20 h-20 rounded-full bg-blue-50 flex items-center justify-center mb-6 animate-pulse-slow">
-                  <TrendingUp className="w-10 h-10 text-blue-600" />
+              <div style={{ ...card, minHeight: 400, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
+                <div style={{ width: 72, height: 72, borderRadius: "50%", background: "#eff6ff", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 20 }}>
+                  <TrendingUp style={{ width: 36, height: 36, color: "#2563eb" }} />
                 </div>
-                <h3 className="text-xl font-bold mb-3 text-gray-900">Čekám na výpočet</h3>
-                <p className="text-gray-400 max-w-xs">
-                  Vyberte lokalitu a zadejte přebytek energie. Výsledky se zobrazí zde.
-                </p>
+                <div style={{ fontWeight: 700, fontSize: 18, color: "#0f172a", marginBottom: 8 }}>Čekám na výpočet</div>
+                <p style={{ fontSize: 14, color: "#64748b", maxWidth: 260 }}>Vyberte lokalitu a zadejte přebytek energie. Výsledky se zobrazí zde.</p>
               </div>
             ) : result ? (
-              <div className="space-y-4">
-                <div className="card-glass rounded-2xl p-6 glow-border">
-                  <div className="flex items-center gap-3 mb-4">
-                    <CheckCircle className="w-6 h-6 text-emerald-600" />
-                    <h3 className="font-bold text-lg text-gray-900">Výsledky výpočtu</h3>
+              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                <div style={{ ...card, border: "1px solid #bfdbfe" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+                    <CheckCircle style={{ width: 22, height: 22, color: "#10b981" }} />
+                    <span style={{ fontWeight: 700, fontSize: 16, color: "#0f172a" }}>Výsledky výpočtu</span>
                   </div>
-
-                  <div className="space-y-4">
-                    <div className="bg-gradient-to-r from-blue-50 to-sky-50 rounded-xl p-5 border border-blue-100">
-                      <div className="text-sm text-gray-400 mb-1">Měsíční příjem</div>
-                      <div className="text-4xl font-black text-gradient-primary">
-                        {formatCZK(result.monthlyIncomeCZK)}
+                  <div style={{ background: "linear-gradient(135deg,#eff6ff,#f0f9ff)", borderRadius: 12, padding: 20, border: "1px solid #bfdbfe", marginBottom: 16 }}>
+                    <div style={{ fontSize: 13, color: "#64748b", marginBottom: 4 }}>Měsíční příjem</div>
+                    <div className="text-gradient-primary" style={{ fontSize: 38, fontWeight: 900 }}>{formatCZK(result.monthlyIncomeCZK)}</div>
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                    {[
+                      { l: "Roční příjem", v: formatCZK(result.annualIncomeCZK), c: "#10b981", bg: "#ecfdf5" },
+                      { l: "Cena za kWh", v: `${result.pricePerKwhCZK.toFixed(2)} Kč`, c: "#2563eb", bg: "#eff6ff" },
+                      { l: "Regionální bonus", v: `×${result.regionMultiplier}`, c: "#7c3aed", bg: "#f5f3ff" },
+                      { l: "Návratnost FVE", v: result.breakEvenMonths < 120 ? `${Math.round(result.breakEvenMonths / 12)} let` : `${result.breakEvenMonths} měs.`, c: "#f59e0b", bg: "#fffbeb" },
+                    ].map(({ l, v, c, bg }) => (
+                      <div key={l} style={{ background: bg, borderRadius: 10, padding: 14 }}>
+                        <div style={{ fontSize: 12, color: "#94a3b8", marginBottom: 2 }}>{l}</div>
+                        <div style={{ fontSize: 19, fontWeight: 700, color: c }}>{v}</div>
                       </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4">
-                        <div className="text-xs text-gray-400 mb-1">Roční příjem</div>
-                        <div className="text-xl font-bold text-emerald-600">
-                          {formatCZK(result.annualIncomeCZK)}
-                        </div>
-                      </div>
-                      <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
-                        <div className="text-xs text-gray-400 mb-1">Cena za kWh</div>
-                        <div className="text-xl font-bold text-blue-600">
-                          {result.pricePerKwhCZK.toFixed(2)} Kč
-                        </div>
-                      </div>
-                      <div className="bg-violet-50 border border-violet-100 rounded-xl p-4">
-                        <div className="text-xs text-gray-400 mb-1">Regionální bonus</div>
-                        <div className="text-xl font-bold text-violet-600">
-                          ×{result.regionMultiplier}
-                        </div>
-                      </div>
-                      <div className="bg-amber-50 border border-amber-100 rounded-xl p-4">
-                        <div className="text-xs text-gray-400 mb-1">Návratnost FVE</div>
-                        <div className="text-xl font-bold text-amber-600">
-                          {result.breakEvenMonths < 120
-                            ? `${Math.round(result.breakEvenMonths / 12)} let`
-                            : `${result.breakEvenMonths} měs.`}
-                        </div>
-                      </div>
-                    </div>
+                    ))}
                   </div>
                 </div>
 
-                <div className="card-glass rounded-2xl p-5">
-                  <h4 className="font-semibold mb-3 text-blue-600">Jak přijít o méně peněz</h4>
-                  <ul className="space-y-2 text-sm text-gray-500">
-                    <li className="flex items-start gap-2">
-                      <CheckCircle className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" />
-                      Registrujte přebytek přes náš portál – dostanete přesné ocenění
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" />
-                      Výkupní ceny v regionech s elektrárnami jsou o 15–40 % vyšší
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" />
-                      Firmy dostávají bonus 15 % za objem nad 1 000 MWh/rok
-                    </li>
-                  </ul>
+                <div style={card}>
+                  <div style={{ fontWeight: 600, fontSize: 15, color: "#2563eb", marginBottom: 12 }}>Jak přijít o méně peněz</div>
+                  {[
+                    "Registrujte přebytek přes náš portál – dostanete přesné ocenění",
+                    "Výkupní ceny v regionech s elektrárnami jsou o 15–40 % vyšší",
+                    "Firmy dostávají bonus 15 % za objem nad 1 000 MWh/rok",
+                  ].map(t => (
+                    <div key={t} style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 8, fontSize: 13, color: "#64748b" }}>
+                      <CheckCircle style={{ width: 15, height: 15, color: "#10b981", flexShrink: 0, marginTop: 1 }} />{t}
+                    </div>
+                  ))}
                 </div>
 
-                <Link
-                  href="/map"
-                  className="block w-full py-3 rounded-xl border border-blue-300 text-blue-600 text-center font-semibold hover:bg-blue-50 transition-all"
-                >
+                <Link href="/map" style={{ display: "block", padding: 14, borderRadius: 12, border: "1px solid #bfdbfe", color: "#2563eb", textAlign: "center", fontWeight: 600, textDecoration: "none", fontSize: 14 }}>
                   Zobrazit elektrárnu ve vaší lokalitě →
                 </Link>
               </div>
             ) : (
-              <div className="card-glass rounded-2xl p-8 text-center">
-                <p className="text-red-500">Chyba výpočtu. Zkuste to znovu.</p>
-              </div>
+              <div style={{ ...card, textAlign: "center" }}><p style={{ color: "#ef4444" }}>Chyba výpočtu. Zkuste to znovu.</p></div>
             )}
           </div>
         </div>
 
-        {/* Info panel */}
-        <div className="mt-8 card-glass rounded-2xl p-6">
-          <h3 className="font-bold text-lg mb-4 text-blue-600">Jak se stanovuje výkupní cena?</h3>
-          <div className="grid md:grid-cols-3 gap-6 text-sm text-gray-500">
-            <div>
-              <div className="font-semibold text-gray-700 mb-2">Regionální multiplikátor</div>
-              <p>Kraje s vyšší poptávkou po ukládání energie (velká průmyslová spotřeba, málo OZE) mají vyšší výkupní cenu. Jihočeský kraj (Temelín) a Ústecký kraj jsou centry přebytků.</p>
-            </div>
-            <div>
-              <div className="font-semibold text-gray-700 mb-2">Tržní cena vodíku</div>
-              <p>Zelený vodík se aktuálně obchoduje za ~4,50 EUR/kg. Elektrolýza spotřebuje ~50 kWh na kg H₂. Výkupní cena odráží tuto konverzní efektivitu minus marže.</p>
-            </div>
-            <div>
-              <div className="font-semibold text-gray-700 mb-2">Dotační podpora</div>
-              <p>Elektrárny v síti H2Age čerpají dotace MPO (45 % CAPEX) a REPowerEU (30 % CAPEX). To umožňuje vyplácet vyšší výkupní ceny dodavatelům energie.</p>
-            </div>
+        {/* info panel */}
+        <div style={{ ...card, marginTop: 32 }}>
+          <div style={{ fontWeight: 700, fontSize: 16, color: "#2563eb", marginBottom: 16 }}>Jak se stanovuje výkupní cena?</div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 24, fontSize: 14, color: "#64748b" }}>
+            {[
+              ["Regionální multiplikátor", "Kraje s vyšší poptávkou po ukládání energie (velká průmyslová spotřeba, málo OZE) mají vyšší výkupní cenu. Jihočeský kraj (Temelín) a Ústecký kraj jsou centry přebytků."],
+              ["Tržní cena vodíku", "Zelený vodík se aktuálně obchoduje za ~4,50 EUR/kg. Elektrolýza spotřebuje ~50 kWh na kg H₂. Výkupní cena odráží tuto konverzní efektivitu minus marže."],
+              ["Dotační podpora", "Elektrárny v síti H2Age čerpají dotace MPO (45 % CAPEX) a REPowerEU (30 % CAPEX). To umožňuje vyplácet vyšší výkupní ceny dodavatelům energie."],
+            ].map(([title, body]) => (
+              <div key={title}>
+                <div style={{ fontWeight: 600, color: "#374151", marginBottom: 6 }}>{title}</div>
+                <p>{body}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -322,7 +238,7 @@ function CalculatorContent() {
 
 export default function CalculatorPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center text-gray-400">Načítám...</div>}>
+    <Suspense fallback={<div style={{ minHeight: "100vh", background: "#f8fafc", display: "flex", alignItems: "center", justifyContent: "center", color: "#64748b" }}>Načítám...</div>}>
       <CalculatorContent />
     </Suspense>
   );

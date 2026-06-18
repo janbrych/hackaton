@@ -2,11 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import {
-  Zap, User, Building2, MapPin, Sun, Wind, Cpu,
-  ChevronRight, ChevronLeft, Check, Sparkles, TrendingUp,
-  Mail, BadgeCheck, ArrowRight,
-} from 'lucide-react'
+import { Zap, User, Building2, MapPin, Sun, Wind, Cpu, ChevronRight, ChevronLeft, Check, Sparkles, TrendingUp, Mail, BadgeCheck, ArrowRight } from 'lucide-react'
 import { CZECH_REGIONS } from '@/data/czechRegions'
 import { saveRegistration, getRegistration, type RegisteredUser } from '@/lib/registration'
 
@@ -14,31 +10,24 @@ type UserType = 'household' | 'business'
 type InstallationType = 'solar' | 'wind' | 'other'
 
 interface FormData {
-  type: UserType
-  name: string
-  email: string
-  regionId: string
-  installationType: InstallationType
-  installedCapacityKw: number
-  monthlySurplusKwh: number
+  type: UserType; name: string; email: string; regionId: string
+  installationType: InstallationType; installedCapacityKw: number; monthlySurplusKwh: number
 }
 
 const STEPS = [
-  { label: 'Kdo jste?', short: '01' },
-  { label: 'Vaše lokalita', short: '02' },
-  { label: 'Přebytky', short: '03' },
-  { label: 'Výsledek', short: '04' },
+  { label: 'Kdo jste?', short: '01' }, { label: 'Vaše lokalita', short: '02' },
+  { label: 'Přebytky', short: '03' }, { label: 'Výsledek', short: '04' },
 ]
-
-const INSTALL_TYPES: { value: InstallationType; label: string; icon: React.ElementType; color: string }[] = [
-  { value: 'solar', label: 'Solární panely', icon: Sun, color: 'text-amber-500' },
-  { value: 'wind', label: 'Větrná turbína', icon: Wind, color: 'text-sky-600' },
-  { value: 'other', label: 'Jiný zdroj', icon: Cpu, color: 'text-violet-600' },
+const INSTALL_TYPES = [
+  { value: 'solar' as InstallationType, label: 'Solární panely', Icon: Sun, color: '#f59e0b' },
+  { value: 'wind' as InstallationType, label: 'Větrná turbína', Icon: Wind, color: '#0ea5e9' },
+  { value: 'other' as InstallationType, label: 'Jiný zdroj', Icon: Cpu, color: '#7c3aed' },
 ]
+function fmtCZK(n: number) { return new Intl.NumberFormat('cs-CZ', { style: 'currency', currency: 'CZK', maximumFractionDigits: 0 }).format(n) }
 
-function formatCZK(n: number) {
-  return new Intl.NumberFormat('cs-CZ', { style: 'currency', currency: 'CZK', maximumFractionDigits: 0 }).format(n)
-}
+const card: React.CSSProperties = { background: '#fff', border: '1px solid #e2e8f0', borderRadius: 20, padding: 32, boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }
+const inputStyle: React.CSSProperties = { width: '100%', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 10, padding: '10px 14px', fontSize: 14, color: '#0f172a', outline: 'none', boxSizing: 'border-box' }
+const btnPrimary: React.CSSProperties = { width: '100%', padding: '14px', borderRadius: 12, background: '#2563eb', color: '#fff', fontWeight: 700, fontSize: 16, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }
 
 export default function RegisterPage() {
   const [step, setStep] = useState(0)
@@ -48,21 +37,9 @@ export default function RegisterPage() {
   const [result, setResult] = useState<{ userId: string; welcomeMessage: string; estimatedAnnualIncome: number } | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [form, setForm] = useState<FormData>({ type: 'household', name: '', email: '', regionId: 'STC', installationType: 'solar', installedCapacityKw: 10, monthlySurplusKwh: 300 })
 
-  const [form, setForm] = useState<FormData>({
-    type: 'household',
-    name: '',
-    email: '',
-    regionId: 'STC',
-    installationType: 'solar',
-    installedCapacityKw: 10,
-    monthlySurplusKwh: 300,
-  })
-
-  useEffect(() => {
-    const user = getRegistration()
-    if (user) setExistingUser(user)
-  }, [])
+  useEffect(() => { const u = getRegistration(); if (u) setExistingUser(u) }, [])
 
   const surplusMin = form.type === 'business' ? 500 : 50
   const surplusMax = form.type === 'business' ? 200000 : 2000
@@ -70,409 +47,220 @@ export default function RegisterPage() {
   function goTo(nextStep: number) {
     setDirection(nextStep > step ? 'forward' : 'back')
     setAnimating(true)
-    setTimeout(() => {
-      setStep(nextStep)
-      setAnimating(false)
-    }, 220)
+    setTimeout(() => { setStep(nextStep); setAnimating(false) }, 220)
   }
 
   async function submitRegistration() {
-    setLoading(true)
-    setError(null)
+    setLoading(true); setError(null)
     try {
-      const res = await fetch('/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
-      })
+      const res = await fetch('/api/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Chyba při registraci')
-
-      const saved = saveRegistration({
-        name: form.name,
-        email: form.email,
-        regionId: form.regionId,
-        type: form.type,
-        monthlySurplusKwh: form.monthlySurplusKwh,
-        installationType: form.installationType,
-        installedCapacityKw: form.installedCapacityKw,
-      })
-
-      setResult({
-        userId: saved.id,
-        welcomeMessage: data.welcomeMessage,
-        estimatedAnnualIncome: data.estimatedAnnualIncome,
-      })
+      const saved = saveRegistration({ name: form.name, email: form.email, regionId: form.regionId, type: form.type, monthlySurplusKwh: form.monthlySurplusKwh, installationType: form.installationType, installedCapacityKw: form.installedCapacityKw })
+      setResult({ userId: saved.id, welcomeMessage: data.welcomeMessage, estimatedAnnualIncome: data.estimatedAnnualIncome })
       goTo(3)
-    } catch (e) {
-      setError(String(e))
-    } finally {
-      setLoading(false)
-    }
+    } catch (e) { setError(String(e)) } finally { setLoading(false) }
   }
 
   const selectedRegion = CZECH_REGIONS.find(r => r.id === form.regionId)
+  const translateX = animating ? (direction === 'forward' ? '-32px' : '32px') : '0px'
+  const opacity = animating ? 0 : 1
 
-  if (existingUser) {
-    return (
-      <div className="gradient-bg grid-lines min-h-screen flex items-center justify-center px-4">
-        <NavBar />
-        <div className="max-w-lg w-full mt-16">
-          <div className="card-glass rounded-3xl p-10 text-center glow-border">
-            <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-6">
-              <BadgeCheck className="w-8 h-8 text-blue-600" />
-            </div>
-            <h1 className="text-3xl font-black mb-3 text-gray-900">Již jste registrováni</h1>
-            <p className="text-gray-500 mb-2">
-              Vítejte zpět, <span className="text-blue-600 font-semibold">{existingUser.name}</span>!
-            </p>
-            <p className="text-gray-400 text-sm mb-8">
-              ID: <span className="font-mono text-gray-600">{existingUser.id}</span>
-            </p>
-            <div className="flex flex-col gap-3">
-              <Link
-                href="/dashboard"
-                className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700 transition-colors"
-              >
-                Přejít na Dashboard <ArrowRight className="w-4 h-4" />
-              </Link>
-              <button
-                onClick={() => setExistingUser(null)}
-                className="text-sm text-gray-400 hover:text-gray-600 transition-colors py-2"
-              >
-                Zaregistrovat jiný účet
-              </button>
-            </div>
+  if (existingUser) return (
+    <div style={{ minHeight: '100vh', background: '#f8fafc', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+      <NavBar />
+      <div style={{ maxWidth: 480, width: '100%', marginTop: 64 }}>
+        <div style={{ ...card, textAlign: 'center', border: '1px solid #bfdbfe' }}>
+          <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
+            <BadgeCheck style={{ width: 32, height: 32, color: '#2563eb' }} />
+          </div>
+          <h1 style={{ fontSize: 28, fontWeight: 900, color: '#0f172a', marginBottom: 8 }}>Již jste registrováni</h1>
+          <p style={{ color: '#64748b', marginBottom: 6 }}>Vítejte zpět, <span style={{ color: '#2563eb', fontWeight: 600 }}>{existingUser.name}</span>!</p>
+          <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 32 }}>ID: <span style={{ fontFamily: 'monospace', color: '#374151' }}>{existingUser.id}</span></p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <Link href="/dashboard" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '12px 24px', borderRadius: 12, background: '#2563eb', color: '#fff', fontWeight: 700, textDecoration: 'none', fontSize: 15 }}>
+              Přejít na Dashboard <ArrowRight style={{ width: 16, height: 16 }} />
+            </Link>
+            <button onClick={() => setExistingUser(null)} style={{ fontSize: 13, color: '#94a3b8', background: 'none', border: 'none', cursor: 'pointer', padding: 8 }}>Zaregistrovat jiný účet</button>
           </div>
         </div>
       </div>
-    )
-  }
-
-  const translateClass = animating
-    ? direction === 'forward'
-      ? '-translate-x-8 opacity-0'
-      : 'translate-x-8 opacity-0'
-    : 'translate-x-0 opacity-100'
+    </div>
+  )
 
   return (
-    <div className="gradient-bg grid-lines min-h-screen bg-gray-50">
+    <div style={{ minHeight: '100vh', background: '#f8fafc' }}>
       <NavBar />
-
-      <div className="max-w-2xl mx-auto px-4 pt-28 pb-16">
-        {/* Progress bar */}
-        <div className="mb-10">
-          <div className="flex items-center justify-between mb-3">
+      <div style={{ maxWidth: 600, margin: '0 auto', padding: '112px 24px 64px' }}>
+        {/* progress */}
+        <div style={{ marginBottom: 40 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
             {STEPS.map((s, i) => (
-              <div key={s.short} className="flex items-center gap-2">
-                <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${
-                    i < step
-                      ? 'bg-blue-600 text-white'
-                      : i === step
-                      ? 'bg-blue-50 border-2 border-blue-600 text-blue-600'
-                      : 'bg-white border border-gray-200 text-gray-400'
-                  }`}
-                >
-                  {i < step ? <Check className="w-4 h-4" /> : s.short}
+              <div key={s.short} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ width: 32, height: 32, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, transition: 'all 0.3s',
+                  background: i < step ? '#2563eb' : i === step ? '#eff6ff' : '#fff',
+                  border: i < step ? 'none' : i === step ? '2px solid #2563eb' : '1px solid #e2e8f0',
+                  color: i < step ? '#fff' : i === step ? '#2563eb' : '#94a3b8' }}>
+                  {i < step ? <Check style={{ width: 14, height: 14 }} /> : s.short}
                 </div>
-                <span className={`hidden sm:block text-xs transition-colors ${i === step ? 'text-blue-600 font-semibold' : 'text-gray-400'}`}>
-                  {s.label}
-                </span>
-                {i < STEPS.length - 1 && (
-                  <div className={`hidden sm:block flex-1 h-px mx-3 transition-colors ${i < step ? 'bg-blue-400' : 'bg-gray-200'}`} style={{ width: '2rem' }} />
-                )}
+                <span style={{ fontSize: 12, color: i === step ? '#2563eb' : '#94a3b8', fontWeight: i === step ? 600 : 400, display: window.innerWidth > 480 ? 'block' : 'none' }}>{s.label}</span>
+                {i < STEPS.length - 1 && <div style={{ width: 32, height: 1, background: i < step ? '#2563eb' : '#e2e8f0', marginLeft: 4 }} />}
               </div>
             ))}
           </div>
-          <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-blue-600 transition-all duration-500"
-              style={{ width: `${((step) / (STEPS.length - 1)) * 100}%` }}
-            />
+          <div style={{ height: 6, background: '#e2e8f0', borderRadius: 999, overflow: 'hidden' }}>
+            <div style={{ height: '100%', background: '#2563eb', borderRadius: 999, width: `${(step / (STEPS.length - 1)) * 100}%`, transition: 'width 0.5s' }} />
           </div>
         </div>
 
-        {/* Step card */}
-        <div
-          className={`card-glass rounded-3xl p-8 transition-all duration-200 ${translateClass}`}
-          style={{ transitionTimingFunction: 'ease-out' }}
-        >
-          {/* STEP 0 — Kdo jste? */}
+        {/* step card */}
+        <div style={{ ...card, transform: `translateX(${translateX})`, opacity, transition: 'all 0.22s ease-out' }}>
+          {/* STEP 0 */}
           {step === 0 && (
             <div>
-              <h2 className="text-3xl font-black mb-2 text-gray-900">Kdo jste?</h2>
-              <p className="text-gray-500 mb-8">Vyberte typ účtu a vyplňte základní údaje.</p>
-
-              <div className="grid grid-cols-2 gap-4 mb-8">
-                {[
-                  { value: 'household' as UserType, label: 'Domácnost', icon: User, desc: 'Rodinný dům, byt' },
-                  { value: 'business' as UserType, label: 'Firma', icon: Building2, desc: 'Podnik, provozovna' },
-                ].map(opt => (
-                  <button
-                    key={opt.value}
-                    onClick={() => {
-                      setForm(f => ({
-                        ...f,
-                        type: opt.value,
-                        monthlySurplusKwh: opt.value === 'business' ? 5000 : 300,
-                      }))
-                    }}
-                    className={`p-6 rounded-2xl border-2 text-left transition-all ${
-                      form.type === opt.value
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-gray-300 bg-white'
-                    }`}
-                  >
-                    <opt.icon className={`w-7 h-7 mb-3 ${form.type === opt.value ? 'text-blue-600' : 'text-gray-400'}`} />
-                    <div className={`font-bold text-lg ${form.type === opt.value ? 'text-gray-900' : 'text-gray-700'}`}>{opt.label}</div>
-                    <div className="text-sm text-gray-400">{opt.desc}</div>
+              <h2 style={{ fontSize: 28, fontWeight: 900, color: '#0f172a', marginBottom: 6 }}>Kdo jste?</h2>
+              <p style={{ color: '#64748b', marginBottom: 28 }}>Vyberte typ účtu a vyplňte základní údaje.</p>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 24 }}>
+                {([{ value: 'household' as UserType, label: 'Domácnost', Icon: User, desc: 'Rodinný dům, byt' }, { value: 'business' as UserType, label: 'Firma', Icon: Building2, desc: 'Podnik, provozovna' }]).map(opt => (
+                  <button key={opt.value} onClick={() => setForm(f => ({ ...f, type: opt.value, monthlySurplusKwh: opt.value === 'business' ? 5000 : 300 }))}
+                    style={{ padding: 20, borderRadius: 14, border: `2px solid ${form.type === opt.value ? '#2563eb' : '#e2e8f0'}`, background: form.type === opt.value ? '#eff6ff' : '#fff', textAlign: 'left', cursor: 'pointer' }}>
+                    <opt.Icon style={{ width: 26, height: 26, marginBottom: 10, color: form.type === opt.value ? '#2563eb' : '#94a3b8' }} />
+                    <div style={{ fontWeight: 700, fontSize: 16, color: form.type === opt.value ? '#2563eb' : '#0f172a' }}>{opt.label}</div>
+                    <div style={{ fontSize: 13, color: '#94a3b8' }}>{opt.desc}</div>
                   </button>
                 ))}
               </div>
-
-              <div className="space-y-4 mb-8">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 24 }}>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Jméno / Název firmy</label>
-                  <input
-                    type="text"
-                    value={form.name}
-                    onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                    placeholder={form.type === 'business' ? 'Název vaší firmy' : 'Vaše jméno'}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200 transition-all"
-                  />
+                  <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 6 }}>Jméno / Název firmy</label>
+                  <input style={inputStyle} type="text" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder={form.type === 'business' ? 'Název vaší firmy' : 'Vaše jméno'} />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    <span className="flex items-center gap-2"><Mail className="w-4 h-4" /> E-mail</span>
+                  <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 } as React.CSSProperties}>
+                    <Mail style={{ width: 14, height: 14 }} /> E-mail
                   </label>
-                  <input
-                    type="email"
-                    value={form.email}
-                    onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-                    placeholder="vas@email.cz"
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200 transition-all"
-                  />
+                  <input style={inputStyle} type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} placeholder="vas@email.cz" />
                 </div>
               </div>
-
-              <button
-                onClick={() => goTo(1)}
-                disabled={!form.name.trim() || !form.email.trim()}
-                className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-blue-600 text-white font-bold text-lg disabled:opacity-40 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors"
-              >
-                Pokračovat <ChevronRight className="w-5 h-5" />
+              <button onClick={() => goTo(1)} disabled={!form.name.trim() || !form.email.trim()} style={{ ...btnPrimary, opacity: !form.name.trim() || !form.email.trim() ? 0.4 : 1 }}>
+                Pokračovat <ChevronRight style={{ width: 18, height: 18 }} />
               </button>
             </div>
           )}
 
-          {/* STEP 1 — Vaše lokalita */}
+          {/* STEP 1 */}
           {step === 1 && (
             <div>
-              <h2 className="text-3xl font-black mb-2 text-gray-900">Vaše lokalita</h2>
-              <p className="text-gray-500 mb-8">Vyberte kraj a typ vaší instalace.</p>
-
-              <div className="space-y-6 mb-8">
+              <h2 style={{ fontSize: 28, fontWeight: 900, color: '#0f172a', marginBottom: 6 }}>Vaše lokalita</h2>
+              <p style={{ color: '#64748b', marginBottom: 28 }}>Vyberte kraj a typ vaší instalace.</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 20, marginBottom: 24 }}>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    <span className="flex items-center gap-2"><MapPin className="w-4 h-4 text-blue-600" /> Kraj</span>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 6 }}>
+                    <MapPin style={{ width: 14, height: 14, color: '#2563eb' }} /> Kraj
                   </label>
-                  <select
-                    value={form.regionId}
-                    onChange={e => setForm(f => ({ ...f, regionId: e.target.value }))}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200 transition-all"
-                  >
-                    {CZECH_REGIONS.map(r => (
-                      <option key={r.id} value={r.id}>{r.name}</option>
-                    ))}
+                  <select style={inputStyle} value={form.regionId} onChange={e => setForm(f => ({ ...f, regionId: e.target.value }))}>
+                    {CZECH_REGIONS.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
                   </select>
-                  {selectedRegion && (
-                    <p className="text-xs text-gray-400 mt-2">
-                      Solární potenciál: {selectedRegion.solarPotential} kWh/kWp/rok · Cena el.: {selectedRegion.avgElectricityPrice} Kč/kWh
-                    </p>
-                  )}
+                  {selectedRegion && <p style={{ fontSize: 12, color: '#94a3b8', marginTop: 6 }}>Solární potenciál: {selectedRegion.solarPotential} kWh/kWp/rok · Cena el.: {selectedRegion.avgElectricityPrice} Kč/kWh</p>}
                 </div>
-
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-3">Typ instalace</label>
-                  <div className="grid grid-cols-3 gap-3">
+                  <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 8 }}>Typ instalace</label>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10 }}>
                     {INSTALL_TYPES.map(t => (
-                      <button
-                        key={t.value}
-                        onClick={() => setForm(f => ({ ...f, installationType: t.value }))}
-                        className={`p-4 rounded-xl border-2 text-center transition-all ${
-                          form.installationType === t.value
-                            ? 'border-blue-500 bg-blue-50'
-                            : 'border-gray-200 hover:border-gray-300 bg-white'
-                        }`}
-                      >
-                        <t.icon className={`w-6 h-6 mx-auto mb-2 ${form.installationType === t.value ? t.color : 'text-gray-400'}`} />
-                        <div className="text-xs font-semibold leading-tight text-gray-700">{t.label}</div>
+                      <button key={t.value} onClick={() => setForm(f => ({ ...f, installationType: t.value }))}
+                        style={{ padding: 14, borderRadius: 12, border: `2px solid ${form.installationType === t.value ? '#2563eb' : '#e2e8f0'}`, background: form.installationType === t.value ? '#eff6ff' : '#fff', textAlign: 'center', cursor: 'pointer' }}>
+                        <t.Icon style={{ width: 22, height: 22, margin: '0 auto 6px', color: form.installationType === t.value ? t.color : '#94a3b8' }} />
+                        <div style={{ fontSize: 12, fontWeight: 600, color: '#374151' }}>{t.label}</div>
                       </button>
                     ))}
                   </div>
                 </div>
-
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Instalovaný výkon (kW)
-                  </label>
-                  <input
-                    type="number"
-                    min={1}
-                    max={form.type === 'business' ? 10000 : 100}
-                    value={form.installedCapacityKw}
-                    onChange={e => setForm(f => ({ ...f, installedCapacityKw: Number(e.target.value) }))}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200 transition-all"
-                  />
-                  <p className="text-xs text-gray-400 mt-1">
-                    {form.type === 'household' ? 'Typická domácnost: 5–20 kW' : 'Typická firma: 50–500 kW'}
-                  </p>
+                  <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 6 }}>Instalovaný výkon (kW)</label>
+                  <input style={inputStyle} type="number" min={1} max={form.type === 'business' ? 10000 : 100} value={form.installedCapacityKw} onChange={e => setForm(f => ({ ...f, installedCapacityKw: Number(e.target.value) }))} />
+                  <p style={{ fontSize: 12, color: '#94a3b8', marginTop: 4 }}>{form.type === 'household' ? 'Typická domácnost: 5–20 kW' : 'Typická firma: 50–500 kW'}</p>
                 </div>
               </div>
-
-              <div className="flex gap-3">
-                <button
-                  onClick={() => goTo(0)}
-                  className="flex items-center gap-2 px-5 py-4 rounded-xl border border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-700 transition-all"
-                >
-                  <ChevronLeft className="w-5 h-5" />
+              <div style={{ display: 'flex', gap: 10 }}>
+                <button onClick={() => goTo(0)} style={{ padding: '14px 18px', borderRadius: 12, border: '1px solid #e2e8f0', background: '#fff', cursor: 'pointer', color: '#64748b', display: 'flex', alignItems: 'center' }}>
+                  <ChevronLeft style={{ width: 18, height: 18 }} />
                 </button>
-                <button
-                  onClick={() => goTo(2)}
-                  className="flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-blue-600 text-white font-bold text-lg hover:bg-blue-700 transition-colors"
-                >
-                  Pokračovat <ChevronRight className="w-5 h-5" />
+                <button onClick={() => goTo(2)} style={{ ...btnPrimary, flex: 1 }}>
+                  Pokračovat <ChevronRight style={{ width: 18, height: 18 }} />
                 </button>
               </div>
             </div>
           )}
 
-          {/* STEP 2 — Přebytky */}
+          {/* STEP 2 */}
           {step === 2 && (
             <div>
-              <h2 className="text-3xl font-black mb-2 text-gray-900">Přebytky energie</h2>
-              <p className="text-gray-500 mb-8">Kolik kWh měsíčně dokážete dodat do sítě?</p>
-
-              <div className="mb-10">
-                <div className="flex items-end justify-between mb-4">
-                  <label className="text-sm font-semibold text-gray-700">Měsíční přebytek</label>
-                  <div className="text-right">
-                    <span className="text-3xl font-black text-gradient-primary">
-                      {form.monthlySurplusKwh.toLocaleString('cs-CZ')}
-                    </span>
-                    <span className="text-gray-500 text-sm ml-1">kWh/měs</span>
+              <h2 style={{ fontSize: 28, fontWeight: 900, color: '#0f172a', marginBottom: 6 }}>Přebytky energie</h2>
+              <p style={{ color: '#64748b', marginBottom: 28 }}>Kolik kWh měsíčně dokážete dodat do sítě?</p>
+              <div style={{ marginBottom: 36 }}>
+                <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 14 }}>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: '#374151' }}>Měsíční přebytek</span>
+                  <div style={{ textAlign: 'right' }}>
+                    <span className="text-gradient-primary" style={{ fontSize: 30, fontWeight: 900 }}>{form.monthlySurplusKwh.toLocaleString('cs-CZ')}</span>
+                    <span style={{ fontSize: 13, color: '#64748b', marginLeft: 4 }}>kWh/měs</span>
                   </div>
                 </div>
-
-                <input
-                  type="range"
-                  min={surplusMin}
-                  max={surplusMax}
-                  step={form.type === 'business' ? 100 : 10}
-                  value={form.monthlySurplusKwh}
-                  onChange={e => setForm(f => ({ ...f, monthlySurplusKwh: Number(e.target.value) }))}
-                  className="w-full accent-blue-600"
-                />
-                <div className="flex justify-between text-xs text-gray-400 mt-1">
-                  <span>{surplusMin.toLocaleString('cs-CZ')} kWh</span>
-                  <span>{surplusMax.toLocaleString('cs-CZ')} kWh</span>
+                <input type="range" min={surplusMin} max={surplusMax} step={form.type === 'business' ? 100 : 10} value={form.monthlySurplusKwh}
+                  onChange={e => setForm(f => ({ ...f, monthlySurplusKwh: Number(e.target.value) }))} style={{ width: '100%', accentColor: '#2563eb' }} />
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: '#94a3b8', marginTop: 4 }}>
+                  <span>{surplusMin.toLocaleString('cs-CZ')} kWh</span><span>{surplusMax.toLocaleString('cs-CZ')} kWh</span>
                 </div>
-
-                <div className="mt-6 grid grid-cols-3 gap-3">
-                  {(form.type === 'household'
-                    ? [100, 300, 600]
-                    : [1000, 5000, 20000]
-                  ).map(preset => (
-                    <button
-                      key={preset}
-                      onClick={() => setForm(f => ({ ...f, monthlySurplusKwh: preset }))}
-                      className={`py-2 rounded-lg text-sm font-semibold transition-all border ${
-                        form.monthlySurplusKwh === preset
-                          ? 'border-blue-500 bg-blue-50 text-blue-600'
-                          : 'border-gray-200 text-gray-500 hover:border-gray-300 bg-white'
-                      }`}
-                    >
-                      {preset.toLocaleString('cs-CZ')} kWh
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8, marginTop: 20 }}>
+                  {(form.type === 'household' ? [100, 300, 600] : [1000, 5000, 20000]).map(p => (
+                    <button key={p} onClick={() => setForm(f => ({ ...f, monthlySurplusKwh: p }))}
+                      style={{ padding: 8, borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', border: `1px solid ${form.monthlySurplusKwh === p ? '#2563eb' : '#e2e8f0'}`, background: form.monthlySurplusKwh === p ? '#eff6ff' : '#fff', color: form.monthlySurplusKwh === p ? '#2563eb' : '#64748b' }}>
+                      {p.toLocaleString('cs-CZ')} kWh
                     </button>
                   ))}
                 </div>
               </div>
-
-              {error && (
-                <p className="text-red-600 text-sm mb-4 p-3 rounded-lg bg-red-50 border border-red-200">{error}</p>
-              )}
-
-              <div className="flex gap-3">
-                <button
-                  onClick={() => goTo(1)}
-                  className="flex items-center gap-2 px-5 py-4 rounded-xl border border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-700 transition-all"
-                >
-                  <ChevronLeft className="w-5 h-5" />
+              {error && <p style={{ fontSize: 13, color: '#ef4444', padding: 12, background: '#fef2f2', borderRadius: 8, border: '1px solid #fecaca', marginBottom: 16 }}>{error}</p>}
+              <div style={{ display: 'flex', gap: 10 }}>
+                <button onClick={() => goTo(1)} style={{ padding: '14px 18px', borderRadius: 12, border: '1px solid #e2e8f0', background: '#fff', cursor: 'pointer', color: '#64748b', display: 'flex', alignItems: 'center' }}>
+                  <ChevronLeft style={{ width: 18, height: 18 }} />
                 </button>
-                <button
-                  onClick={submitRegistration}
-                  disabled={loading}
-                  className="flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-blue-600 text-white font-bold text-lg disabled:opacity-60 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors"
-                >
-                  {loading ? (
-                    <>
-                      <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      Zpracování...
-                    </>
-                  ) : (
-                    <>
-                      Dokončit registraci <ChevronRight className="w-5 h-5" />
-                    </>
-                  )}
+                <button onClick={submitRegistration} disabled={loading} style={{ ...btnPrimary, flex: 1, opacity: loading ? 0.7 : 1 }}>
+                  {loading ? <><span style={{ width: 18, height: 18, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', display: 'inline-block' }} /> Zpracování...</> : <>Dokončit registraci <ChevronRight style={{ width: 18, height: 18 }} /></>}
                 </button>
               </div>
             </div>
           )}
 
-          {/* STEP 3 — Výsledek */}
+          {/* STEP 3 */}
           {step === 3 && result && (
-            <div className="text-center">
-              <div className="w-20 h-20 rounded-full bg-blue-50 border-2 border-blue-200 flex items-center justify-center mx-auto mb-6">
-                <Sparkles className="w-10 h-10 text-blue-600" />
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ width: 72, height: 72, borderRadius: '50%', background: '#eff6ff', border: '2px solid #bfdbfe', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
+                <Sparkles style={{ width: 36, height: 36, color: '#2563eb' }} />
               </div>
-
-              <h2 className="text-3xl font-black mb-3 text-gray-900">Vítejte v síti H2Age!</h2>
-              <p className="text-gray-500 mb-6 leading-relaxed">{result.welcomeMessage}</p>
-
-              <div className="card-glass rounded-2xl p-5 mb-6 text-left bg-gray-50">
-                <div className="text-xs text-gray-400 uppercase tracking-wider mb-1">Vaše unikátní ID</div>
-                <div className="font-mono text-sm text-blue-600 break-all">{result.userId}</div>
+              <h2 style={{ fontSize: 28, fontWeight: 900, color: '#0f172a', marginBottom: 12 }}>Vítejte v síti H2Age!</h2>
+              <p style={{ color: '#64748b', marginBottom: 20, lineHeight: 1.65 }}>{result.welcomeMessage}</p>
+              <div style={{ background: '#f8fafc', borderRadius: 12, padding: 16, marginBottom: 20, textAlign: 'left' }}>
+                <div style={{ fontSize: 11, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Vaše unikátní ID</div>
+                <div style={{ fontFamily: 'monospace', fontSize: 13, color: '#2563eb', wordBreak: 'break-all' }}>{result.userId}</div>
               </div>
-
-              <div className="grid grid-cols-2 gap-4 mb-8">
-                <div className="card-glass rounded-2xl p-5 text-left">
-                  <div className="flex items-center gap-2 text-emerald-600 mb-2">
-                    <TrendingUp className="w-4 h-4" />
-                    <span className="text-xs uppercase tracking-wider font-semibold">Roční příjem</span>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 24 }}>
+                <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 14, padding: 18, textAlign: 'left' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#10b981', marginBottom: 8, fontSize: 12, fontWeight: 600, textTransform: 'uppercase' }}>
+                    <TrendingUp style={{ width: 14, height: 14 }} /> Roční příjem
                   </div>
-                  <div className="text-2xl font-black text-gradient-primary">
-                    {formatCZK(result.estimatedAnnualIncome)}
-                  </div>
-                  <div className="text-xs text-gray-400 mt-1">odhad při {form.monthlySurplusKwh.toLocaleString('cs-CZ')} kWh/měs</div>
+                  <div className="text-gradient-primary" style={{ fontSize: 22, fontWeight: 900 }}>{fmtCZK(result.estimatedAnnualIncome)}</div>
+                  <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>odhad při {form.monthlySurplusKwh.toLocaleString('cs-CZ')} kWh/měs</div>
                 </div>
-                <div className="card-glass rounded-2xl p-5 text-left">
-                  <div className="flex items-center gap-2 text-blue-600 mb-2">
-                    <MapPin className="w-4 h-4" />
-                    <span className="text-xs uppercase tracking-wider font-semibold">Lokalita</span>
+                <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 14, padding: 18, textAlign: 'left' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#2563eb', marginBottom: 8, fontSize: 12, fontWeight: 600, textTransform: 'uppercase' }}>
+                    <MapPin style={{ width: 14, height: 14 }} /> Lokalita
                   </div>
-                  <div className="text-lg font-bold text-gray-900">{selectedRegion?.name}</div>
-                  <div className="text-xs text-gray-400 mt-1">
-                    {form.type === 'household' ? 'Domácnost' : 'Firma'} · {form.installedCapacityKw} kW
-                  </div>
+                  <div style={{ fontSize: 17, fontWeight: 700, color: '#0f172a' }}>{selectedRegion?.name}</div>
+                  <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>{form.type === 'household' ? 'Domácnost' : 'Firma'} · {form.installedCapacityKw} kW</div>
                 </div>
               </div>
-
-              <Link
-                href="/dashboard"
-                className="flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-blue-600 text-white font-bold text-lg hover:bg-blue-700 transition-all hover:scale-105 shadow-lg shadow-blue-200"
-              >
-                Přejít na Dashboard <ArrowRight className="w-5 h-5" />
+              <Link href="/dashboard" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '14px 28px', borderRadius: 12, background: '#2563eb', color: '#fff', fontWeight: 700, fontSize: 16, textDecoration: 'none', boxShadow: '0 4px 16px rgba(37,99,235,0.2)' }}>
+                Přejít na Dashboard <ArrowRight style={{ width: 18, height: 18 }} />
               </Link>
             </div>
           )}
@@ -484,15 +272,15 @@ export default function RegisterPage() {
 
 function NavBar() {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200">
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center">
-            <Zap className="w-5 h-5 text-white" />
+    <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(12px)', borderBottom: '1px solid #e2e8f0' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
+          <div style={{ width: 36, height: 36, borderRadius: 10, background: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Zap style={{ width: 18, height: 18, color: '#fff' }} />
           </div>
-          <span className="text-lg font-bold text-gray-900">H2Age</span>
+          <span style={{ fontWeight: 800, fontSize: 18, color: '#0f172a' }}>H2Age</span>
         </Link>
-        <div className="text-sm font-medium text-gray-400">Registrace</div>
+        <span style={{ fontSize: 14, fontWeight: 500, color: '#94a3b8' }}>Registrace</span>
       </div>
     </nav>
   )

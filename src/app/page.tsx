@@ -2,10 +2,20 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import {
   Zap, MapPin, Calculator, TrendingUp, Leaf, Factory,
-  ChevronRight, Activity, Globe, Shield, ArrowRight
+  ChevronRight, Activity, Globe, Shield, ArrowRight, CheckCircle2
 } from "lucide-react";
+
+const MiniMapUstecky = dynamic(() => import("@/components/MiniMapUstecky"), {
+  ssr: false,
+  loading: () => (
+    <div style={{ width: "100%", height: "100%", background: "#f1f5f9", display: "flex", alignItems: "center", justifyContent: "center", color: "#94a3b8", fontSize: 14 }}>
+      Načítám mapu…
+    </div>
+  ),
+});
 
 const STATS = [
   { label: "Přebytek OZE v ČR/rok", value: "4,2 TWh", sub: "dle ČEPS 2024" },
@@ -111,6 +121,58 @@ export default function HomePage() {
                 <div style={{ fontSize: 11, color: "#94a3b8" }}>{s.sub}</div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── MAP SECTION – Ústecký kraj ── */}
+      <section style={{ padding: "96px 24px", background: "#f8fafc" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1.6fr", gap: 48, alignItems: "center" }}>
+            {/* Left: info */}
+            <div>
+              <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "5px 14px", borderRadius: 999, border: "1px solid #bfdbfe", background: "#eff6ff", color: "#2563eb", fontSize: 12, fontWeight: 600, marginBottom: 20, letterSpacing: "0.04em", textTransform: "uppercase" }}>
+                <MapPin style={{ width: 12, height: 12 }} />
+                Pilotní region
+              </div>
+              <h2 style={{ fontSize: "clamp(28px, 3.5vw, 44px)", fontWeight: 900, color: "#0f172a", marginBottom: 16, letterSpacing: "-0.02em", lineHeight: 1.1 }}>
+                H2Age v<br />Ústeckém kraji
+              </h2>
+              <p style={{ fontSize: 16, color: "#64748b", lineHeight: 1.7, marginBottom: 32 }}>
+                Ústecký kraj je naším prvním pilotním regionem — kombinace brownfield lokalit,
+                průmyslové spotřeby a přebytků z OZE vytváří ideální podmínky pro síť vodíkových elektráren.
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                {[
+                  { label: "3 elektrárny",        sub: "Ústí n. L. · Chomutov · Most",  color: "#2563eb" },
+                  { label: "265 MW celkem",        sub: "celková výrobní kapacita",       color: "#2563eb" },
+                  { label: "52 km pokrytí",        sub: "poloměr zásobovací sítě",        color: "#2563eb" },
+                  { label: "4,2 mld. Kč/rok",     sub: "odhadovaný roční výnos",         color: "#2563eb" },
+                ].map(item => (
+                  <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <CheckCircle2 style={{ width: 18, height: 18, color: item.color, flexShrink: 0 }} />
+                    <div>
+                      <span style={{ fontWeight: 700, color: "#0f172a", fontSize: 15 }}>{item.label}</span>
+                      <span style={{ color: "#94a3b8", fontSize: 13, marginLeft: 8 }}>{item.sub}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div style={{ marginTop: 36 }}>
+                <Link href="/map" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "12px 24px", borderRadius: 10, background: "#2563eb", color: "#fff", fontWeight: 700, fontSize: 15, textDecoration: "none" }}>
+                  Zobrazit celou mapu sítě <ArrowRight style={{ width: 16, height: 16 }} />
+                </Link>
+              </div>
+            </div>
+            {/* Right: map */}
+            <div style={{ borderRadius: 20, overflow: "hidden", border: "1px solid #e2e8f0", boxShadow: "0 4px 24px rgba(0,0,0,0.07)", height: 420, position: "relative" }}>
+              <MiniMapUstecky />
+              {/* overlay badge */}
+              <div style={{ position: "absolute", top: 16, left: 16, zIndex: 1000, background: "rgba(255,255,255,0.95)", border: "1px solid #e2e8f0", borderRadius: 10, padding: "8px 14px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)", display: "flex", alignItems: "center", gap: 8 }}>
+                <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#22c55e", boxShadow: "0 0 6px #22c55e" }} />
+                <span style={{ fontSize: 12, fontWeight: 600, color: "#0f172a" }}>3 aktivní lokality</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
