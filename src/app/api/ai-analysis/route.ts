@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
       .join("\n");
 
     const systemPrompt = `Jsi expert na energetiku a vodíkové technologie v České republice.
-Pracuješ pro společnost HydroGrid CZ, která buduje síť vodíkových elektráren.
+Pracuješ pro společnost H2Age, která buduje síť vodíkových elektráren.
 Máš přístup k aktuálním datům z ČEPS, ERÚ a OTE.
 
 Aktuální stav optimalizace sítě:

@@ -15,251 +15,190 @@ const STATS = [
 ];
 
 const FEATURES = [
-  {
-    icon: MapPin,
-    title: "Inteligentní rozmístění",
-    desc: "AI algoritmus vypočítá optimální umístění továren podle dat ČEPS, ERÚ a hustoty obyvatelstva.",
-    color: "text-cyan-400",
-    bg: "bg-cyan-500/10",
-  },
-  {
-    icon: Zap,
-    title: "Sběrná energetická síť",
-    desc: "Sbíráme přebytky z domácností, firem i elektráren. Každý kilowatt se zhodnotí.",
-    color: "text-green-400",
-    bg: "bg-green-500/10",
-  },
-  {
-    icon: Calculator,
-    title: "Výpočet zisku online",
-    desc: "Zadejte lokalitu a odhadované přebytky – okamžitě uvidíte korunový zisk na kWh.",
-    color: "text-violet-400",
-    bg: "bg-violet-500/10",
-  },
-  {
-    icon: Activity,
-    title: "AI predikce a plánování",
-    desc: "Strojové učení předpovídá budoucí přebytky a navrhuje expanzi sítě s návratností.",
-    color: "text-amber-400",
-    bg: "bg-amber-500/10",
-  },
-  {
-    icon: Factory,
-    title: "Brownfield prioritizace",
-    desc: "Elektrárny stavíme přednostně v areálech bývalých dolů a průmyslových zón.",
-    color: "text-rose-400",
-    bg: "bg-rose-500/10",
-  },
-  {
-    icon: TrendingUp,
-    title: "Transparentní výnosy",
-    desc: "Jasný výpočet sdílení zisku. Domácnosti i firmy vidí svůj podíl v reálném čase.",
-    color: "text-sky-400",
-    bg: "bg-sky-500/10",
-  },
+  { icon: MapPin,     title: "Inteligentní rozmístění",  desc: "AI algoritmus vypočítá optimální umístění továren podle dat ČEPS, ERÚ a hustoty obyvatelstva.", color: "text-blue-600",   bg: "bg-blue-50"   },
+  { icon: Zap,        title: "Sběrná energetická síť",   desc: "Sbíráme přebytky z domácností, firem i elektráren. Každý kilowatt se zhodnotí.",              color: "text-emerald-600", bg: "bg-emerald-50" },
+  { icon: Calculator, title: "Výpočet zisku online",     desc: "Zadejte lokalitu a odhadované přebytky – okamžitě uvidíte korunový zisk na kWh.",             color: "text-violet-600", bg: "bg-violet-50"  },
+  { icon: Activity,   title: "AI predikce a plánování",  desc: "Strojové učení předpovídá budoucí přebytky a navrhuje expanzi sítě s návratností.",            color: "text-amber-600",  bg: "bg-amber-50"   },
+  { icon: Factory,    title: "Brownfield prioritizace",  desc: "Elektrárny stavíme přednostně v areálech bývalých dolů a průmyslových zón.",                   color: "text-rose-600",   bg: "bg-rose-50"    },
+  { icon: TrendingUp, title: "Transparentní výnosy",     desc: "Jasný výpočet sdílení zisku. Domácnosti i firmy vidí svůj podíl v reálném čase.",              color: "text-sky-600",    bg: "bg-sky-50"     },
+];
+
+const STEPS = [
+  { step: "01", icon: Zap,     title: "Sbíráme přebytky",   color: "text-blue-600",   bg: "bg-blue-50",
+    desc: "Kupujeme levnou energii od domácností, solárních parků, větrných elektráren a průmyslových podniků při přebytku v síti." },
+  { step: "02", icon: Factory, title: "Ukládáme jako vodík", color: "text-emerald-600", bg: "bg-emerald-50",
+    desc: "PEM elektrolyzéry přemění elektřinu na zelený vodík. Továrny stojí strategicky – minimální ztráty přenosu." },
+  { step: "03", icon: Globe,   title: "Vracíme elektřinu",   color: "text-violet-600", bg: "bg-violet-50",
+    desc: "Při nedostatku palivové články převedou vodík zpět na elektřinu. Stabilizujeme síť a vydělávame na cenovém rozdílu." },
 ];
 
 export default function HomePage() {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-
   return (
-    <div className="gradient-bg grid-lines min-h-screen">
-      {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-50 card-glass border-b border-slate-800/50">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-cyan-500 to-green-500 flex items-center justify-center">
-              <Zap className="w-5 h-5 text-white" />
+    <div style={{ background: "#fff", minHeight: "100vh" }}>
+
+      {/* ── NAV ── */}
+      <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 50, background: "rgba(255,255,255,0.95)", backdropFilter: "blur(12px)", borderBottom: "1px solid #e2e8f0" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", height: 64, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ width: 36, height: 36, borderRadius: 10, background: "#2563eb", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Zap style={{ width: 18, height: 18, color: "#fff" }} />
             </div>
-            <span className="text-lg font-bold text-gradient-primary">HydroGrid CZ</span>
+            <span style={{ fontWeight: 800, fontSize: 18, color: "#0f172a", letterSpacing: "-0.02em" }}>H2Age</span>
           </div>
-          <div className="hidden md:flex items-center gap-6 text-sm text-slate-400">
-            <Link href="/map" className="hover:text-cyan-400 transition-colors">Mapa sítě</Link>
-            <Link href="/dashboard" className="hover:text-cyan-400 transition-colors">Dashboard</Link>
-            <Link href="/calculator" className="hover:text-cyan-400 transition-colors">Kalkulačka</Link>
-            <Link href="/ai" className="hover:text-cyan-400 transition-colors">AI Analýza</Link>
+          <div style={{ display: "flex", alignItems: "center", gap: 32 }} className="hidden-mobile">
+            {[["Mapa sítě", "/map"], ["Dashboard", "/dashboard"], ["Kalkulačka", "/calculator"], ["AI Analýza", "/ai"]].map(([label, href]) => (
+              <Link key={href} href={href} style={{ fontSize: 14, fontWeight: 500, color: "#64748b", textDecoration: "none" }}
+                onMouseEnter={e => (e.currentTarget.style.color = "#2563eb")}
+                onMouseLeave={e => (e.currentTarget.style.color = "#64748b")}
+              >{label}</Link>
+            ))}
           </div>
-          <div className="flex items-center gap-3">
-            <Link
-              href="/register"
-              className="flex items-center gap-2 px-4 py-2 rounded-lg border border-cyan-500/50 text-sm font-semibold text-cyan-400 hover:bg-cyan-500/10 transition-all"
-            >
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <Link href="/register" style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid #bfdbfe", fontSize: 14, fontWeight: 600, color: "#2563eb", textDecoration: "none", background: "transparent" }}>
               Registrovat se
             </Link>
-            <Link
-              href="/calculator"
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-green-500 text-sm font-semibold text-black hover:opacity-90 transition-opacity"
-            >
-              Spočítat zisk <ChevronRight className="w-4 h-4" />
+            <Link href="/calculator" style={{ padding: "8px 16px", borderRadius: 8, background: "#2563eb", fontSize: 14, fontWeight: 600, color: "#fff", textDecoration: "none", display: "flex", alignItems: "center", gap: 6 }}>
+              Spočítat zisk <ChevronRight style={{ width: 14, height: 14 }} />
             </Link>
           </div>
         </div>
       </nav>
 
-      {/* Hero */}
-      <section className="relative pt-32 pb-20 px-4 overflow-hidden">
-        <div className="absolute top-20 left-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-green-500/5 rounded-full blur-3xl pointer-events-none" />
-        <div className="max-w-5xl mx-auto text-center relative">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-400 text-sm mb-8">
-            <Leaf className="w-4 h-4" />
+      {/* ── HERO ── */}
+      <section style={{ paddingTop: 140, paddingBottom: 80, paddingLeft: 24, paddingRight: 24, textAlign: "center", position: "relative", overflow: "hidden" }}>
+        {/* decorative blobs */}
+        <div style={{ position: "absolute", top: 80, left: "20%", width: 400, height: 400, background: "radial-gradient(circle, rgba(37,99,235,0.07) 0%, transparent 70%)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", bottom: 0, right: "20%", width: 320, height: 320, background: "radial-gradient(circle, rgba(14,165,233,0.06) 0%, transparent 70%)", pointerEvents: "none" }} />
+
+        <div style={{ maxWidth: 960, margin: "0 auto", position: "relative" }}>
+          {/* badge */}
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 16px", borderRadius: 999, border: "1px solid #bfdbfe", background: "#eff6ff", color: "#2563eb", fontSize: 13, fontWeight: 500, marginBottom: 32 }}>
+            <Leaf style={{ width: 14, height: 14 }} />
             Zelená energetika pro Českou republiku
           </div>
-          <h1 className="text-5xl md:text-7xl font-black mb-6 leading-tight">
+
+          {/* headline */}
+          <h1 style={{ fontSize: "clamp(42px, 6vw, 80px)", fontWeight: 900, lineHeight: 1.05, letterSpacing: "-0.03em", color: "#0f172a", marginBottom: 24 }}>
             Přebytky energie
             <br />
             <span className="text-gradient-primary">přeměňte na zisk</span>
           </h1>
-          <p className="text-xl text-slate-400 max-w-3xl mx-auto mb-10 leading-relaxed">
-            Budujeme síť vodíkových elektráren po celé ČR. Nakupujeme vaše přebytky z
-            obnovitelných zdrojů, ukládáme je jako zelený vodík a vracíme jako levnou elektřinu,
-            když ji síť potřebuje.
+
+          {/* subtext */}
+          <p style={{ fontSize: "clamp(16px, 1.8vw, 20px)", color: "#64748b", maxWidth: 680, margin: "0 auto 40px", lineHeight: 1.7 }}>
+            Budujeme síť vodíkových elektráren po celé ČR. Nakupujeme vaše přebytky z obnovitelných zdrojů,
+            ukládáme je jako zelený vodík a vracíme jako levnou elektřinu, když ji síť potřebuje.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-            <Link
-              href="/calculator"
-              className="flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-green-500 text-black font-bold text-lg hover:opacity-90 transition-all hover:scale-105"
-            >
-              <Calculator className="w-5 h-5" />
+
+          {/* CTA buttons */}
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 16, justifyContent: "center", marginBottom: 72 }}>
+            <Link href="/calculator" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 28px", borderRadius: 12, background: "#2563eb", color: "#fff", fontWeight: 700, fontSize: 17, textDecoration: "none", boxShadow: "0 4px 24px rgba(37,99,235,0.25)" }}>
+              <Calculator style={{ width: 18, height: 18 }} />
               Spočítat váš zisk
             </Link>
-            <Link
-              href="/map"
-              className="flex items-center justify-center gap-2 px-8 py-4 rounded-xl border border-slate-600 text-slate-300 font-semibold text-lg hover:border-cyan-500 hover:text-cyan-400 transition-all"
-            >
-              <MapPin className="w-5 h-5" />
+            <Link href="/map" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 28px", borderRadius: 12, border: "1px solid #e2e8f0", background: "#fff", color: "#374151", fontWeight: 600, fontSize: 17, textDecoration: "none" }}>
+              <MapPin style={{ width: 18, height: 18 }} />
               Zobrazit mapu sítě
             </Link>
           </div>
-          {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {STATS.map((s) => (
-              <div key={s.label} className="card-glass rounded-2xl p-5">
-                <div className="text-2xl font-black text-gradient-primary mb-1">{s.value}</div>
-                <div className="text-sm font-semibold text-slate-300 mb-1">{s.label}</div>
-                <div className="text-xs text-slate-500">{s.sub}</div>
+
+          {/* stats */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
+            {STATS.map(s => (
+              <div key={s.label} style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 16, padding: "20px 16px", boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
+                <div className="text-gradient-primary" style={{ fontSize: 28, fontWeight: 900, marginBottom: 4 }}>{s.value}</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: "#374151", marginBottom: 4 }}>{s.label}</div>
+                <div style={{ fontSize: 11, color: "#94a3b8" }}>{s.sub}</div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* How it works */}
-      <section className="py-20 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-14">
-            <h2 className="text-4xl font-black mb-4">Jak to funguje</h2>
-            <p className="text-slate-400 text-lg max-w-2xl mx-auto">
-              Třístupňový cyklus – přebytek → vodík → elektřina
-            </p>
+      {/* ── HOW IT WORKS ── */}
+      <section style={{ padding: "96px 24px", background: "#fff" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: 64 }}>
+            <h2 style={{ fontSize: "clamp(32px, 4vw, 52px)", fontWeight: 900, color: "#0f172a", marginBottom: 12, letterSpacing: "-0.02em" }}>Jak to funguje</h2>
+            <p style={{ fontSize: 18, color: "#64748b", maxWidth: 480, margin: "0 auto" }}>Třístupňový cyklus – přebytek → vodík → elektřina</p>
           </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              {
-                step: "01",
-                icon: Zap,
-                title: "Sbíráme přebytky",
-                desc: "Kupujeme levnou energii od domácností, solárních parků, větrných elektráren a průmyslových podniků při přebytku v síti.",
-                color: "text-cyan-400",
-              },
-              {
-                step: "02",
-                icon: Factory,
-                title: "Ukládáme jako vodík",
-                desc: "PEM elektrolyzéry přemění elektřinu na zelený vodík. Továrny stojí strategicky – minimální ztráty přenosu.",
-                color: "text-green-400",
-              },
-              {
-                step: "03",
-                icon: Globe,
-                title: "Vracíme elektřinu",
-                desc: "Při nedostatku palivové články převedou vodík zpět na elektřinu. Stabilizujeme síť a vydělávame na cenovém rozdílu.",
-                color: "text-violet-400",
-              },
-            ].map((item) => (
-              <div key={item.step} className="card-glass rounded-2xl p-8 relative hover:glow-border transition-all">
-                <div className="text-5xl font-black text-slate-800 absolute top-4 right-6">{item.step}</div>
-                <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-5">
-                  <item.icon className={`w-7 h-7 ${item.color}`} />
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
+            {STEPS.map(item => (
+              <div key={item.step} style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 20, padding: 32, boxShadow: "0 1px 4px rgba(0,0,0,0.05)", position: "relative" }}>
+                <span style={{ position: "absolute", top: 16, right: 20, fontSize: 52, fontWeight: 900, color: "#f1f5f9", lineHeight: 1, userSelect: "none" }}>{item.step}</span>
+                <div style={{ width: 52, height: 52, borderRadius: 14, background: item.bg.replace("bg-", "").includes("blue") ? "#eff6ff" : item.bg.replace("bg-", "").includes("emerald") ? "#ecfdf5" : "#f5f3ff", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 20 }}>
+                  <item.icon style={{ width: 26, height: 26 }} className={item.color} />
                 </div>
-                <h3 className="text-xl font-bold mb-3">{item.title}</h3>
-                <p className="text-slate-400 leading-relaxed">{item.desc}</p>
+                <h3 style={{ fontSize: 19, fontWeight: 700, color: "#0f172a", marginBottom: 10 }}>{item.title}</h3>
+                <p style={{ fontSize: 15, color: "#64748b", lineHeight: 1.65 }}>{item.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Features */}
-      <section className="py-20 px-4 bg-slate-900/20">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-14">
-            <h2 className="text-4xl font-black mb-4">Proč HydroGrid CZ</h2>
-            <p className="text-slate-400 text-lg">Nejefektivnější systém ukládání energie v ČR</p>
+      {/* ── FEATURES ── */}
+      <section style={{ padding: "96px 24px", background: "#f8fafc" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: 64 }}>
+            <h2 style={{ fontSize: "clamp(32px, 4vw, 52px)", fontWeight: 900, color: "#0f172a", marginBottom: 12, letterSpacing: "-0.02em" }}>Proč H2Age</h2>
+            <p style={{ fontSize: 18, color: "#64748b" }}>Nejefektivnější systém ukládání energie v ČR</p>
           </div>
-          <div className="grid md:grid-cols-3 gap-5">
-            {FEATURES.map((f) => (
-              <div key={f.title} className="card-glass rounded-2xl p-6 hover:glow-border transition-all group">
-                <div className={`w-12 h-12 rounded-xl ${f.bg} flex items-center justify-center mb-4`}>
-                  <f.icon className={`w-6 h-6 ${f.color}`} />
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
+            {FEATURES.map(f => (
+              <div key={f.title} style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 20, padding: 24, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
+                <div style={{ width: 46, height: 46, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16 }} className={f.bg}>
+                  <f.icon style={{ width: 22, height: 22 }} className={f.color} />
                 </div>
-                <h3 className="font-bold text-lg mb-2 group-hover:text-cyan-400 transition-colors">{f.title}</h3>
-                <p className="text-slate-400 text-sm leading-relaxed">{f.desc}</p>
+                <h3 style={{ fontSize: 16, fontWeight: 700, color: "#0f172a", marginBottom: 8 }}>{f.title}</h3>
+                <p style={{ fontSize: 14, color: "#64748b", lineHeight: 1.65 }}>{f.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-20 px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="card-glass rounded-3xl p-12 text-center glow-border relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-green-500/5 pointer-events-none" />
-            <Shield className="w-12 h-12 text-cyan-400 mx-auto mb-6" />
-            <h2 className="text-4xl font-black mb-4">Jste domácnost nebo firma?</h2>
-            <p className="text-xl text-slate-400 mb-8 max-w-2xl mx-auto">
-              Zjistěte, kolik Kč vám přinese každá kilowatthodina přebytku z vaší lokality.
-              Výpočet trvá 30 sekund.
+      {/* ── CTA ── */}
+      <section style={{ padding: "96px 24px", background: "#fff" }}>
+        <div style={{ maxWidth: 760, margin: "0 auto" }}>
+          <div style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 28, padding: "72px 48px", textAlign: "center", boxShadow: "0 0 0 1px rgba(37,99,235,0.08), 0 8px 40px rgba(37,99,235,0.07)", position: "relative", overflow: "hidden" }}>
+            <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 0%, rgba(37,99,235,0.04) 0%, transparent 60%)", pointerEvents: "none" }} />
+            <Shield style={{ width: 44, height: 44, color: "#2563eb", margin: "0 auto 24px" }} />
+            <h2 style={{ fontSize: "clamp(26px, 3.5vw, 42px)", fontWeight: 900, color: "#0f172a", marginBottom: 16, letterSpacing: "-0.02em" }}>Jste domácnost nebo firma?</h2>
+            <p style={{ fontSize: 18, color: "#64748b", maxWidth: 500, margin: "0 auto 40px", lineHeight: 1.65 }}>
+              Zjistěte, kolik Kč vám přinese každá kilowatthodina přebytku z vaší lokality. Výpočet trvá 30 sekund.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/calculator?type=household"
-                className="flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-green-500 text-black font-bold text-lg hover:opacity-90 transition-all hover:scale-105"
-              >
-                Pro domácnosti <ArrowRight className="w-5 h-5" />
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 16, justifyContent: "center" }}>
+              <Link href="/calculator?type=household" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 28px", borderRadius: 12, background: "#2563eb", color: "#fff", fontWeight: 700, fontSize: 16, textDecoration: "none", boxShadow: "0 4px 20px rgba(37,99,235,0.25)" }}>
+                Pro domácnosti <ArrowRight style={{ width: 18, height: 18 }} />
               </Link>
-              <Link
-                href="/calculator?type=business"
-                className="flex items-center justify-center gap-2 px-8 py-4 rounded-xl border border-slate-600 text-slate-300 font-semibold text-lg hover:border-cyan-500 hover:text-cyan-400 transition-all"
-              >
-                Pro firmy <ArrowRight className="w-5 h-5" />
+              <Link href="/calculator?type=business" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 28px", borderRadius: 12, border: "1px solid #e2e8f0", background: "#fff", color: "#374151", fontWeight: 600, fontSize: 16, textDecoration: "none" }}>
+                Pro firmy <ArrowRight style={{ width: 18, height: 18 }} />
               </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-800 py-10 px-4">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-green-500 flex items-center justify-center">
-              <Zap className="w-4 h-4 text-white" />
+      {/* ── FOOTER ── */}
+      <footer style={{ borderTop: "1px solid #e2e8f0", padding: "32px 24px" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ width: 32, height: 32, borderRadius: 8, background: "#2563eb", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Zap style={{ width: 16, height: 16, color: "#fff" }} />
             </div>
-            <span className="font-bold text-gradient-primary">HydroGrid CZ</span>
+            <span style={{ fontWeight: 700, color: "#0f172a" }}>H2Age</span>
           </div>
-          <div className="flex items-center gap-6 text-sm text-slate-500">
+          <div style={{ display: "flex", alignItems: "center", gap: 24, fontSize: 13, color: "#94a3b8" }}>
             <span>Data: ČEPS · ERÚ · OTE · ČSÚ</span>
-            <span>·</span>
-            <Link href="/map" className="hover:text-slate-300 transition-colors">Mapa</Link>
-            <Link href="/dashboard" className="hover:text-slate-300 transition-colors">Dashboard</Link>
-            <Link href="/ai" className="hover:text-slate-300 transition-colors">AI</Link>
+            {[["Mapa", "/map"], ["Dashboard", "/dashboard"], ["AI", "/ai"]].map(([l, h]) => (
+              <Link key={h} href={h} style={{ color: "#94a3b8", textDecoration: "none" }}>{l}</Link>
+            ))}
           </div>
-          <div className="text-sm text-slate-600">© 2025 HydroGrid CZ s.r.o.</div>
+          <div style={{ fontSize: 13, color: "#94a3b8" }}>© 2025 H2Age s.r.o.</div>
         </div>
       </footer>
+
     </div>
   );
 }

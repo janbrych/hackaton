@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     const userId = crypto.randomUUID()
 
     const typeLabel = type === 'business' ? 'firemní' : 'domácnostní'
-    const welcomeMessage = `Vítejte v síti HydroGrid CZ, ${name}! Váš ${typeLabel} účet byl aktivován. Začínáte vydělávat na zelené energii.`
+    const welcomeMessage = `Vítejte v síti H2Age, ${name}! Váš ${typeLabel} účet byl aktivován. Začínáte vydělávat na zelené energii.`
 
     return NextResponse.json({
       success: true,

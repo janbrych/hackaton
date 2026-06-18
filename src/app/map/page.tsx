@@ -34,7 +34,7 @@ export default function MapPage() {
         <div className="flex items-center gap-4">
           <Link href="/" className="flex items-center gap-2 text-slate-400 hover:text-cyan-400 transition-colors text-sm">
             <ChevronLeft className="w-4 h-4" />
-            HydroGrid CZ
+            H2Age
           </Link>
           <span className="text-slate-700">/</span>
           <div className="flex items-center gap-2">
@@ -181,7 +181,7 @@ export default function MapPage() {
                 <div className="border border-slate-700 bg-slate-800/50 rounded-xl p-4">
                   <div className="flex items-center gap-2 text-slate-400 text-sm">
                     <Info className="w-4 h-4" />
-                    Tento kraj nesplňuje minimální kritéria pro elektrárnu HydroGrid.
+                    Tento kraj nesplňuje minimální kritéria pro elektrárnu H2Age.
                   </div>
                 </div>
               )}
@@ -195,7 +195,7 @@ export default function MapPage() {
             </div>
           ) : (
             <div className="p-5 space-y-4">
-              <h2 className="font-bold text-lg">Síť HydroGrid CZ</h2>
+              <h2 className="font-bold text-lg">Síť H2Age</h2>
               <p className="text-sm text-slate-400">
                 Klikněte na kraj v mapě pro detail elektrárny a energetická data.
               </p>

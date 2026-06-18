@@ -27,7 +27,7 @@ export default function AIPage() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: `Dobrý den! Jsem AI analytik HydroGrid CZ. Mám přístup k datům ze sítě ${NETWORK.recommendations.length} vodíkových elektráren s celkovou kapacitou **${NETWORK.totalCapacityMW} MW** a predikovaným ročním výnosem **${formatCZK(NETWORK.totalAnnualRevenueCZK)}**.
+      content: `Dobrý den! Jsem AI analytik H2Age. Mám přístup k datům ze sítě ${NETWORK.recommendations.length} vodíkových elektráren s celkovou kapacitou **${NETWORK.totalCapacityMW} MW** a predikovaným ročním výnosem **${formatCZK(NETWORK.totalAnnualRevenueCZK)}**.
 
 Mohu vám pomoci s:
 - **Analýzou lokalit** – optimální rozmístění elektráren dle dat ČEPS/ERÚ
@@ -95,21 +95,20 @@ Na co se chcete zeptat?`,
   }
 
   function renderMessage(content: string) {
-    // Simple markdown-like rendering
     return content
       .split("\n")
       .map((line, i) => {
         if (line.startsWith("**") && line.endsWith("**")) {
-          return <p key={i} className="font-bold text-cyan-300">{line.slice(2, -2)}</p>;
+          return <p key={i} className="font-bold text-blue-700">{line.slice(2, -2)}</p>;
         }
         if (line.startsWith("- ")) {
-          return <li key={i} className="ml-4 text-slate-300">{formatInline(line.slice(2))}</li>;
+          return <li key={i} className="ml-4 text-gray-700">{formatInline(line.slice(2))}</li>;
         }
         if (line.startsWith("# ")) {
-          return <h3 key={i} className="text-lg font-bold text-cyan-400 mt-2">{line.slice(2)}</h3>;
+          return <h3 key={i} className="text-lg font-bold text-blue-600 mt-2">{line.slice(2)}</h3>;
         }
         if (line === "") return <br key={i} />;
-        return <p key={i} className="text-slate-200">{formatInline(line)}</p>;
+        return <p key={i} className="text-gray-700">{formatInline(line)}</p>;
       });
   }
 
@@ -117,28 +116,28 @@ Na co se chcete zeptat?`,
     const parts = text.split(/(\*\*[^*]+\*\*)/g);
     return parts.map((part, i) => {
       if (part.startsWith("**") && part.endsWith("**")) {
-        return <strong key={i} className="text-cyan-300 font-semibold">{part.slice(2, -2)}</strong>;
+        return <strong key={i} className="text-blue-700 font-semibold">{part.slice(2, -2)}</strong>;
       }
       return part;
     });
   }
 
   return (
-    <div className="gradient-bg min-h-screen flex flex-col">
+    <div className="gradient-bg min-h-screen flex flex-col bg-gray-50">
       {/* Header */}
-      <div className="border-b border-slate-800/50 px-4 py-3 flex items-center justify-between card-glass flex-shrink-0">
+      <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-4">
-          <Link href="/" className="flex items-center gap-2 text-slate-400 hover:text-cyan-400 transition-colors text-sm">
+          <Link href="/" className="flex items-center gap-2 text-gray-400 hover:text-blue-600 transition-colors text-sm font-medium">
             <ChevronLeft className="w-4 h-4" />
-            HydroGrid CZ
+            H2Age
           </Link>
-          <span className="text-slate-700">/</span>
+          <span className="text-gray-300">/</span>
           <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-cyan-400" />
-            <span className="font-semibold text-cyan-400">AI Energetický Analytik</span>
+            <Sparkles className="w-4 h-4 text-blue-600" />
+            <span className="font-semibold text-blue-600">AI Energetický Analytik</span>
           </div>
         </div>
-        <div className="flex items-center gap-2 text-xs text-slate-500">
+        <div className="flex items-center gap-2 text-xs text-gray-400">
           <Bot className="w-4 h-4" />
           Powered by Claude (Anthropic)
         </div>
@@ -148,17 +147,17 @@ Na co se chcete zeptat?`,
         {/* Sidebar – stats */}
         <div className="hidden lg:flex flex-col w-72 flex-shrink-0 space-y-4">
           <div className="card-glass rounded-2xl p-5">
-            <h3 className="font-bold text-sm text-slate-400 uppercase tracking-wider mb-4">Stav sítě</h3>
+            <h3 className="font-bold text-sm text-gray-400 uppercase tracking-wider mb-4">Stav sítě</h3>
             <div className="space-y-3">
               {[
-                { icon: Factory, label: "Lokalit", value: `${NETWORK.recommendations.length}`, color: "text-cyan-400" },
-                { icon: Zap, label: "Kapacita", value: `${NETWORK.totalCapacityMW} MW`, color: "text-green-400" },
-                { icon: TrendingUp, label: "Roční výnos", value: formatCZK(NETWORK.totalAnnualRevenueCZK), color: "text-violet-400" },
-                { icon: MapPin, label: "Pokrytí", value: `${NETWORK.coveragePercent} %`, color: "text-amber-400" },
+                { icon: Factory, label: "Lokalit", value: `${NETWORK.recommendations.length}`, color: "text-blue-600" },
+                { icon: Zap, label: "Kapacita", value: `${NETWORK.totalCapacityMW} MW`, color: "text-emerald-600" },
+                { icon: TrendingUp, label: "Roční výnos", value: formatCZK(NETWORK.totalAnnualRevenueCZK), color: "text-violet-600" },
+                { icon: MapPin, label: "Pokrytí", value: `${NETWORK.coveragePercent} %`, color: "text-amber-600" },
               ].map((item) => (
                 <div key={item.label} className="flex items-center gap-3">
                   <item.icon className={`w-4 h-4 ${item.color} flex-shrink-0`} />
-                  <span className="text-slate-400 text-sm flex-1">{item.label}</span>
+                  <span className="text-gray-500 text-sm flex-1">{item.label}</span>
                   <span className={`font-semibold text-sm ${item.color}`}>{item.value}</span>
                 </div>
               ))}
@@ -166,14 +165,14 @@ Na co se chcete zeptat?`,
           </div>
 
           <div className="card-glass rounded-2xl p-5">
-            <h3 className="font-bold text-sm text-slate-400 uppercase tracking-wider mb-4">Navržené otázky</h3>
+            <h3 className="font-bold text-sm text-gray-400 uppercase tracking-wider mb-4">Navržené otázky</h3>
             <div className="space-y-2">
               {SUGGESTED_QUESTIONS.map((q) => (
                 <button
                   key={q}
                   onClick={() => sendMessage(q)}
                   disabled={loading}
-                  className="w-full text-left text-xs text-slate-400 hover:text-cyan-400 hover:bg-slate-800 p-2 rounded-lg transition-all border border-transparent hover:border-slate-700 leading-relaxed disabled:opacity-50"
+                  className="w-full text-left text-xs text-gray-500 hover:text-blue-600 hover:bg-blue-50 p-2 rounded-lg transition-all border border-transparent hover:border-blue-100 leading-relaxed disabled:opacity-50"
                 >
                   {q}
                 </button>
@@ -193,25 +192,29 @@ Na co se chcete zeptat?`,
               >
                 <div className={`w-9 h-9 rounded-xl flex-shrink-0 flex items-center justify-center ${
                   msg.role === "assistant"
-                    ? "bg-gradient-to-br from-cyan-500 to-green-500"
-                    : "bg-slate-700"
+                    ? "bg-blue-600"
+                    : "bg-gray-200"
                 }`}>
                   {msg.role === "assistant"
-                    ? <Bot className="w-5 h-5 text-black" />
-                    : <User className="w-5 h-5 text-slate-300" />
+                    ? <Bot className="w-5 h-5 text-white" />
+                    : <User className="w-5 h-5 text-gray-500" />
                   }
                 </div>
                 <div className={`max-w-2xl ${msg.role === "user" ? "items-end" : "items-start"} flex flex-col`}>
                   <div className={`rounded-2xl px-5 py-4 text-sm leading-relaxed ${
                     msg.role === "assistant"
                       ? "card-glass rounded-tl-sm"
-                      : "bg-cyan-500/20 border border-cyan-500/30 rounded-tr-sm"
+                      : "bg-blue-600 text-white rounded-tr-sm"
                   }`}>
-                    <div className="space-y-1">
-                      {renderMessage(msg.content)}
-                    </div>
+                    {msg.role === "user" ? (
+                      <p className="text-white">{msg.content}</p>
+                    ) : (
+                      <div className="space-y-1">
+                        {renderMessage(msg.content)}
+                      </div>
+                    )}
                   </div>
-                  <div className="text-xs text-slate-600 mt-1 px-1">
+                  <div className="text-xs text-gray-400 mt-1 px-1">
                     {msg.timestamp.toLocaleTimeString("cs-CZ", { hour: "2-digit", minute: "2-digit" })}
                   </div>
                 </div>
@@ -220,15 +223,15 @@ Na co se chcete zeptat?`,
 
             {loading && (
               <div className="flex gap-3">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500 to-green-500 flex items-center justify-center flex-shrink-0">
-                  <Bot className="w-5 h-5 text-black" />
+                <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center flex-shrink-0">
+                  <Bot className="w-5 h-5 text-white" />
                 </div>
                 <div className="card-glass rounded-2xl rounded-tl-sm px-5 py-4">
                   <div className="flex gap-1.5 items-center">
                     {[0, 1, 2].map((i) => (
                       <div
                         key={i}
-                        className="w-2 h-2 rounded-full bg-cyan-400 animate-bounce"
+                        className="w-2 h-2 rounded-full bg-blue-400 animate-bounce"
                         style={{ animationDelay: `${i * 0.15}s` }}
                       />
                     ))}
@@ -246,7 +249,7 @@ Na co se chcete zeptat?`,
                 key={q}
                 onClick={() => sendMessage(q)}
                 disabled={loading}
-                className="flex-shrink-0 text-xs px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-400 hover:text-cyan-400 hover:border-cyan-500/50 transition-all disabled:opacity-50"
+                className="flex-shrink-0 text-xs px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-500 hover:text-blue-600 hover:border-blue-300 transition-all disabled:opacity-50"
               >
                 {q.slice(0, 40)}...
               </button>
@@ -255,7 +258,7 @@ Na co se chcete zeptat?`,
 
           {/* Input */}
           <div className="flex-shrink-0 mt-2">
-            <div className="card-glass rounded-2xl border border-slate-700 focus-within:border-cyan-500/50 transition-colors flex items-end gap-3 p-3">
+            <div className="card-glass rounded-2xl border border-gray-200 focus-within:border-blue-400 transition-colors flex items-end gap-3 p-3">
               <textarea
                 ref={inputRef}
                 value={input}
@@ -263,18 +266,18 @@ Na co se chcete zeptat?`,
                 onKeyDown={handleKeyDown}
                 placeholder="Zeptejte se na energetická data, rozmístění elektráren, ekonomiku projektu..."
                 rows={1}
-                className="flex-1 bg-transparent text-slate-200 placeholder-slate-500 resize-none focus:outline-none text-sm min-h-[36px] max-h-32"
+                className="flex-1 bg-transparent text-gray-800 placeholder-gray-400 resize-none focus:outline-none text-sm min-h-[36px] max-h-32"
                 style={{ height: "auto" }}
               />
               <button
                 onClick={() => sendMessage(input)}
                 disabled={!input.trim() || loading}
-                className="w-10 h-10 rounded-xl bg-gradient-to-r from-cyan-500 to-green-500 flex items-center justify-center flex-shrink-0 disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90 transition-opacity"
+                className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center flex-shrink-0 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors"
               >
-                <Send className="w-4 h-4 text-black" />
+                <Send className="w-4 h-4 text-white" />
               </button>
             </div>
-            <p className="text-xs text-slate-600 mt-2 text-center">
+            <p className="text-xs text-gray-400 mt-2 text-center">
               Enter pro odeslání · Shift+Enter pro nový řádek
             </p>
           </div>

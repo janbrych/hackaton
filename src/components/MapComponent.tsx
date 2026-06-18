@@ -155,7 +155,7 @@ export default function MapComponent({ regions, recommendations, onSelect, selec
 
       const recInfo = rec
         ? `<div style="margin-top:8px;padding:8px;background:#1a2535;border-radius:6px;font-size:12px;">
-            <div style="color:#22c55e;font-weight:600;margin-bottom:4px;">&#10003; Elektrárna HydroGrid</div>
+            <div style="color:#22c55e;font-weight:600;margin-bottom:4px;">&#10003; Elektrárna H2Age</div>
             <div style="color:#94a3b8;">${rec.totalCapacityMW} MW &middot; n&aacute;vratnost ${rec.paybackYears} let</div>
           </div>`
         : "";

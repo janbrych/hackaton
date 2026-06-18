@@ -31,9 +31,9 @@ const STEPS = [
 ]
 
 const INSTALL_TYPES: { value: InstallationType; label: string; icon: React.ElementType; color: string }[] = [
-  { value: 'solar', label: 'Solární panely', icon: Sun, color: 'text-amber-400' },
-  { value: 'wind', label: 'Větrná turbína', icon: Wind, color: 'text-sky-400' },
-  { value: 'other', label: 'Jiný zdroj', icon: Cpu, color: 'text-violet-400' },
+  { value: 'solar', label: 'Solární panely', icon: Sun, color: 'text-amber-500' },
+  { value: 'wind', label: 'Větrná turbína', icon: Wind, color: 'text-sky-600' },
+  { value: 'other', label: 'Jiný zdroj', icon: Cpu, color: 'text-violet-600' },
 ]
 
 function formatCZK(n: number) {
@@ -119,26 +119,26 @@ export default function RegisterPage() {
         <NavBar />
         <div className="max-w-lg w-full mt-16">
           <div className="card-glass rounded-3xl p-10 text-center glow-border">
-            <div className="w-16 h-16 rounded-full bg-cyan-500/20 flex items-center justify-center mx-auto mb-6">
-              <BadgeCheck className="w-8 h-8 text-cyan-400" />
+            <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-6">
+              <BadgeCheck className="w-8 h-8 text-blue-600" />
             </div>
-            <h1 className="text-3xl font-black mb-3">Již jste registrováni</h1>
-            <p className="text-slate-400 mb-2">
-              Vítejte zpět, <span className="text-cyan-400 font-semibold">{existingUser.name}</span>!
+            <h1 className="text-3xl font-black mb-3 text-gray-900">Již jste registrováni</h1>
+            <p className="text-gray-500 mb-2">
+              Vítejte zpět, <span className="text-blue-600 font-semibold">{existingUser.name}</span>!
             </p>
-            <p className="text-slate-500 text-sm mb-8">
-              ID: <span className="font-mono text-slate-400">{existingUser.id}</span>
+            <p className="text-gray-400 text-sm mb-8">
+              ID: <span className="font-mono text-gray-600">{existingUser.id}</span>
             </p>
             <div className="flex flex-col gap-3">
               <Link
                 href="/dashboard"
-                className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-green-500 text-black font-bold hover:opacity-90 transition-opacity"
+                className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700 transition-colors"
               >
                 Přejít na Dashboard <ArrowRight className="w-4 h-4" />
               </Link>
               <button
                 onClick={() => setExistingUser(null)}
-                className="text-sm text-slate-500 hover:text-slate-300 transition-colors py-2"
+                className="text-sm text-gray-400 hover:text-gray-600 transition-colors py-2"
               >
                 Zaregistrovat jiný účet
               </button>
@@ -156,7 +156,7 @@ export default function RegisterPage() {
     : 'translate-x-0 opacity-100'
 
   return (
-    <div className="gradient-bg grid-lines min-h-screen">
+    <div className="gradient-bg grid-lines min-h-screen bg-gray-50">
       <NavBar />
 
       <div className="max-w-2xl mx-auto px-4 pt-28 pb-16">
@@ -168,26 +168,26 @@ export default function RegisterPage() {
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${
                     i < step
-                      ? 'bg-gradient-to-br from-cyan-500 to-green-500 text-black'
+                      ? 'bg-blue-600 text-white'
                       : i === step
-                      ? 'bg-cyan-500/20 border border-cyan-500 text-cyan-400'
-                      : 'bg-slate-800 text-slate-600 border border-slate-700'
+                      ? 'bg-blue-50 border-2 border-blue-600 text-blue-600'
+                      : 'bg-white border border-gray-200 text-gray-400'
                   }`}
                 >
                   {i < step ? <Check className="w-4 h-4" /> : s.short}
                 </div>
-                <span className={`hidden sm:block text-xs transition-colors ${i === step ? 'text-cyan-400 font-semibold' : 'text-slate-600'}`}>
+                <span className={`hidden sm:block text-xs transition-colors ${i === step ? 'text-blue-600 font-semibold' : 'text-gray-400'}`}>
                   {s.label}
                 </span>
                 {i < STEPS.length - 1 && (
-                  <div className={`hidden sm:block flex-1 h-px mx-3 transition-colors ${i < step ? 'bg-cyan-500/60' : 'bg-slate-800'}`} style={{ width: '2rem' }} />
+                  <div className={`hidden sm:block flex-1 h-px mx-3 transition-colors ${i < step ? 'bg-blue-400' : 'bg-gray-200'}`} style={{ width: '2rem' }} />
                 )}
               </div>
             ))}
           </div>
-          <div className="h-1 bg-slate-800 rounded-full overflow-hidden">
+          <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-cyan-500 to-green-500 transition-all duration-500"
+              className="h-full bg-blue-600 transition-all duration-500"
               style={{ width: `${((step) / (STEPS.length - 1)) * 100}%` }}
             />
           </div>
@@ -201,8 +201,8 @@ export default function RegisterPage() {
           {/* STEP 0 — Kdo jste? */}
           {step === 0 && (
             <div>
-              <h2 className="text-3xl font-black mb-2">Kdo jste?</h2>
-              <p className="text-slate-400 mb-8">Vyberte typ účtu a vyplňte základní údaje.</p>
+              <h2 className="text-3xl font-black mb-2 text-gray-900">Kdo jste?</h2>
+              <p className="text-gray-500 mb-8">Vyberte typ účtu a vyplňte základní údaje.</p>
 
               <div className="grid grid-cols-2 gap-4 mb-8">
                 {[
@@ -220,30 +220,30 @@ export default function RegisterPage() {
                     }}
                     className={`p-6 rounded-2xl border-2 text-left transition-all ${
                       form.type === opt.value
-                        ? 'border-cyan-500 bg-cyan-500/10'
-                        : 'border-slate-700 hover:border-slate-500'
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 hover:border-gray-300 bg-white'
                     }`}
                   >
-                    <opt.icon className={`w-7 h-7 mb-3 ${form.type === opt.value ? 'text-cyan-400' : 'text-slate-500'}`} />
-                    <div className="font-bold text-lg">{opt.label}</div>
-                    <div className="text-sm text-slate-500">{opt.desc}</div>
+                    <opt.icon className={`w-7 h-7 mb-3 ${form.type === opt.value ? 'text-blue-600' : 'text-gray-400'}`} />
+                    <div className={`font-bold text-lg ${form.type === opt.value ? 'text-gray-900' : 'text-gray-700'}`}>{opt.label}</div>
+                    <div className="text-sm text-gray-400">{opt.desc}</div>
                   </button>
                 ))}
               </div>
 
               <div className="space-y-4 mb-8">
                 <div>
-                  <label className="block text-sm font-semibold text-slate-300 mb-2">Jméno / Název firmy</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Jméno / Název firmy</label>
                   <input
                     type="text"
                     value={form.name}
                     onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                     placeholder={form.type === 'business' ? 'Název vaší firmy' : 'Vaše jméno'}
-                    className="w-full bg-slate-800/60 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500 transition-colors"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200 transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-slate-300 mb-2">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
                     <span className="flex items-center gap-2"><Mail className="w-4 h-4" /> E-mail</span>
                   </label>
                   <input
@@ -251,7 +251,7 @@ export default function RegisterPage() {
                     value={form.email}
                     onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
                     placeholder="vas@email.cz"
-                    className="w-full bg-slate-800/60 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500 transition-colors"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200 transition-all"
                   />
                 </div>
               </div>
@@ -259,7 +259,7 @@ export default function RegisterPage() {
               <button
                 onClick={() => goTo(1)}
                 disabled={!form.name.trim() || !form.email.trim()}
-                className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-green-500 text-black font-bold text-lg disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90 transition-opacity"
+                className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-blue-600 text-white font-bold text-lg disabled:opacity-40 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors"
               >
                 Pokračovat <ChevronRight className="w-5 h-5" />
               </button>
@@ -269,32 +269,32 @@ export default function RegisterPage() {
           {/* STEP 1 — Vaše lokalita */}
           {step === 1 && (
             <div>
-              <h2 className="text-3xl font-black mb-2">Vaše lokalita</h2>
-              <p className="text-slate-400 mb-8">Vyberte kraj a typ vaší instalace.</p>
+              <h2 className="text-3xl font-black mb-2 text-gray-900">Vaše lokalita</h2>
+              <p className="text-gray-500 mb-8">Vyberte kraj a typ vaší instalace.</p>
 
               <div className="space-y-6 mb-8">
                 <div>
-                  <label className="block text-sm font-semibold text-slate-300 mb-2">
-                    <span className="flex items-center gap-2"><MapPin className="w-4 h-4 text-cyan-400" /> Kraj</span>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <span className="flex items-center gap-2"><MapPin className="w-4 h-4 text-blue-600" /> Kraj</span>
                   </label>
                   <select
                     value={form.regionId}
                     onChange={e => setForm(f => ({ ...f, regionId: e.target.value }))}
-                    className="w-full bg-slate-800/60 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200 transition-all"
                   >
                     {CZECH_REGIONS.map(r => (
                       <option key={r.id} value={r.id}>{r.name}</option>
                     ))}
                   </select>
                   {selectedRegion && (
-                    <p className="text-xs text-slate-500 mt-2">
+                    <p className="text-xs text-gray-400 mt-2">
                       Solární potenciál: {selectedRegion.solarPotential} kWh/kWp/rok · Cena el.: {selectedRegion.avgElectricityPrice} Kč/kWh
                     </p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-slate-300 mb-3">Typ instalace</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-3">Typ instalace</label>
                   <div className="grid grid-cols-3 gap-3">
                     {INSTALL_TYPES.map(t => (
                       <button
@@ -302,19 +302,19 @@ export default function RegisterPage() {
                         onClick={() => setForm(f => ({ ...f, installationType: t.value }))}
                         className={`p-4 rounded-xl border-2 text-center transition-all ${
                           form.installationType === t.value
-                            ? 'border-cyan-500 bg-cyan-500/10'
-                            : 'border-slate-700 hover:border-slate-500'
+                            ? 'border-blue-500 bg-blue-50'
+                            : 'border-gray-200 hover:border-gray-300 bg-white'
                         }`}
                       >
-                        <t.icon className={`w-6 h-6 mx-auto mb-2 ${form.installationType === t.value ? t.color : 'text-slate-500'}`} />
-                        <div className="text-xs font-semibold leading-tight">{t.label}</div>
+                        <t.icon className={`w-6 h-6 mx-auto mb-2 ${form.installationType === t.value ? t.color : 'text-gray-400'}`} />
+                        <div className="text-xs font-semibold leading-tight text-gray-700">{t.label}</div>
                       </button>
                     ))}
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-slate-300 mb-2">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Instalovaný výkon (kW)
                   </label>
                   <input
@@ -323,9 +323,9 @@ export default function RegisterPage() {
                     max={form.type === 'business' ? 10000 : 100}
                     value={form.installedCapacityKw}
                     onChange={e => setForm(f => ({ ...f, installedCapacityKw: Number(e.target.value) }))}
-                    className="w-full bg-slate-800/60 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200 transition-all"
                   />
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-xs text-gray-400 mt-1">
                     {form.type === 'household' ? 'Typická domácnost: 5–20 kW' : 'Typická firma: 50–500 kW'}
                   </p>
                 </div>
@@ -334,13 +334,13 @@ export default function RegisterPage() {
               <div className="flex gap-3">
                 <button
                   onClick={() => goTo(0)}
-                  className="flex items-center gap-2 px-5 py-4 rounded-xl border border-slate-700 text-slate-400 hover:border-slate-500 hover:text-slate-300 transition-all"
+                  className="flex items-center gap-2 px-5 py-4 rounded-xl border border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-700 transition-all"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
                 <button
                   onClick={() => goTo(2)}
-                  className="flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-green-500 text-black font-bold text-lg hover:opacity-90 transition-opacity"
+                  className="flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-blue-600 text-white font-bold text-lg hover:bg-blue-700 transition-colors"
                 >
                   Pokračovat <ChevronRight className="w-5 h-5" />
                 </button>
@@ -351,17 +351,17 @@ export default function RegisterPage() {
           {/* STEP 2 — Přebytky */}
           {step === 2 && (
             <div>
-              <h2 className="text-3xl font-black mb-2">Přebytky energie</h2>
-              <p className="text-slate-400 mb-8">Kolik kWh měsíčně dokážete dodat do sítě?</p>
+              <h2 className="text-3xl font-black mb-2 text-gray-900">Přebytky energie</h2>
+              <p className="text-gray-500 mb-8">Kolik kWh měsíčně dokážete dodat do sítě?</p>
 
               <div className="mb-10">
                 <div className="flex items-end justify-between mb-4">
-                  <label className="text-sm font-semibold text-slate-300">Měsíční přebytek</label>
+                  <label className="text-sm font-semibold text-gray-700">Měsíční přebytek</label>
                   <div className="text-right">
                     <span className="text-3xl font-black text-gradient-primary">
                       {form.monthlySurplusKwh.toLocaleString('cs-CZ')}
                     </span>
-                    <span className="text-slate-400 text-sm ml-1">kWh/měs</span>
+                    <span className="text-gray-500 text-sm ml-1">kWh/měs</span>
                   </div>
                 </div>
 
@@ -372,9 +372,9 @@ export default function RegisterPage() {
                   step={form.type === 'business' ? 100 : 10}
                   value={form.monthlySurplusKwh}
                   onChange={e => setForm(f => ({ ...f, monthlySurplusKwh: Number(e.target.value) }))}
-                  className="w-full accent-cyan-400"
+                  className="w-full accent-blue-600"
                 />
-                <div className="flex justify-between text-xs text-slate-600 mt-1">
+                <div className="flex justify-between text-xs text-gray-400 mt-1">
                   <span>{surplusMin.toLocaleString('cs-CZ')} kWh</span>
                   <span>{surplusMax.toLocaleString('cs-CZ')} kWh</span>
                 </div>
@@ -389,8 +389,8 @@ export default function RegisterPage() {
                       onClick={() => setForm(f => ({ ...f, monthlySurplusKwh: preset }))}
                       className={`py-2 rounded-lg text-sm font-semibold transition-all border ${
                         form.monthlySurplusKwh === preset
-                          ? 'border-cyan-500 bg-cyan-500/15 text-cyan-400'
-                          : 'border-slate-700 text-slate-500 hover:border-slate-500'
+                          ? 'border-blue-500 bg-blue-50 text-blue-600'
+                          : 'border-gray-200 text-gray-500 hover:border-gray-300 bg-white'
                       }`}
                     >
                       {preset.toLocaleString('cs-CZ')} kWh
@@ -400,24 +400,24 @@ export default function RegisterPage() {
               </div>
 
               {error && (
-                <p className="text-red-400 text-sm mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/30">{error}</p>
+                <p className="text-red-600 text-sm mb-4 p-3 rounded-lg bg-red-50 border border-red-200">{error}</p>
               )}
 
               <div className="flex gap-3">
                 <button
                   onClick={() => goTo(1)}
-                  className="flex items-center gap-2 px-5 py-4 rounded-xl border border-slate-700 text-slate-400 hover:border-slate-500 hover:text-slate-300 transition-all"
+                  className="flex items-center gap-2 px-5 py-4 rounded-xl border border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-700 transition-all"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
                 <button
                   onClick={submitRegistration}
                   disabled={loading}
-                  className="flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-green-500 text-black font-bold text-lg disabled:opacity-60 disabled:cursor-not-allowed hover:opacity-90 transition-opacity"
+                  className="flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-blue-600 text-white font-bold text-lg disabled:opacity-60 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors"
                 >
                   {loading ? (
                     <>
-                      <span className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                      <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                       Zpracování...
                     </>
                   ) : (
@@ -433,36 +433,36 @@ export default function RegisterPage() {
           {/* STEP 3 — Výsledek */}
           {step === 3 && result && (
             <div className="text-center">
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-cyan-500/20 to-green-500/20 border border-cyan-500/40 flex items-center justify-center mx-auto mb-6">
-                <Sparkles className="w-10 h-10 text-cyan-400" />
+              <div className="w-20 h-20 rounded-full bg-blue-50 border-2 border-blue-200 flex items-center justify-center mx-auto mb-6">
+                <Sparkles className="w-10 h-10 text-blue-600" />
               </div>
 
-              <h2 className="text-3xl font-black mb-3">Vítejte v síti HydroGrid!</h2>
-              <p className="text-slate-400 mb-6 leading-relaxed">{result.welcomeMessage}</p>
+              <h2 className="text-3xl font-black mb-3 text-gray-900">Vítejte v síti H2Age!</h2>
+              <p className="text-gray-500 mb-6 leading-relaxed">{result.welcomeMessage}</p>
 
-              <div className="card-glass rounded-2xl p-5 mb-6 text-left">
-                <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">Vaše unikátní ID</div>
-                <div className="font-mono text-sm text-cyan-400 break-all">{result.userId}</div>
+              <div className="card-glass rounded-2xl p-5 mb-6 text-left bg-gray-50">
+                <div className="text-xs text-gray-400 uppercase tracking-wider mb-1">Vaše unikátní ID</div>
+                <div className="font-mono text-sm text-blue-600 break-all">{result.userId}</div>
               </div>
 
               <div className="grid grid-cols-2 gap-4 mb-8">
                 <div className="card-glass rounded-2xl p-5 text-left">
-                  <div className="flex items-center gap-2 text-green-400 mb-2">
+                  <div className="flex items-center gap-2 text-emerald-600 mb-2">
                     <TrendingUp className="w-4 h-4" />
-                    <span className="text-xs uppercase tracking-wider">Roční příjem</span>
+                    <span className="text-xs uppercase tracking-wider font-semibold">Roční příjem</span>
                   </div>
                   <div className="text-2xl font-black text-gradient-primary">
                     {formatCZK(result.estimatedAnnualIncome)}
                   </div>
-                  <div className="text-xs text-slate-500 mt-1">odhad při {form.monthlySurplusKwh.toLocaleString('cs-CZ')} kWh/měs</div>
+                  <div className="text-xs text-gray-400 mt-1">odhad při {form.monthlySurplusKwh.toLocaleString('cs-CZ')} kWh/měs</div>
                 </div>
                 <div className="card-glass rounded-2xl p-5 text-left">
-                  <div className="flex items-center gap-2 text-cyan-400 mb-2">
+                  <div className="flex items-center gap-2 text-blue-600 mb-2">
                     <MapPin className="w-4 h-4" />
-                    <span className="text-xs uppercase tracking-wider">Lokalita</span>
+                    <span className="text-xs uppercase tracking-wider font-semibold">Lokalita</span>
                   </div>
-                  <div className="text-lg font-bold">{selectedRegion?.name}</div>
-                  <div className="text-xs text-slate-500 mt-1">
+                  <div className="text-lg font-bold text-gray-900">{selectedRegion?.name}</div>
+                  <div className="text-xs text-gray-400 mt-1">
                     {form.type === 'household' ? 'Domácnost' : 'Firma'} · {form.installedCapacityKw} kW
                   </div>
                 </div>
@@ -470,7 +470,7 @@ export default function RegisterPage() {
 
               <Link
                 href="/dashboard"
-                className="flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-green-500 text-black font-bold text-lg hover:opacity-90 transition-all hover:scale-105"
+                className="flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-blue-600 text-white font-bold text-lg hover:bg-blue-700 transition-all hover:scale-105 shadow-lg shadow-blue-200"
               >
                 Přejít na Dashboard <ArrowRight className="w-5 h-5" />
               </Link>
@@ -484,15 +484,15 @@ export default function RegisterPage() {
 
 function NavBar() {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 card-glass border-b border-slate-800/50">
-      <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200">
+      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-cyan-500 to-green-500 flex items-center justify-center">
+          <div className="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center">
             <Zap className="w-5 h-5 text-white" />
           </div>
-          <span className="text-lg font-bold text-gradient-primary">HydroGrid CZ</span>
+          <span className="text-lg font-bold text-gray-900">H2Age</span>
         </Link>
-        <div className="text-sm text-slate-400">Registrace</div>
+        <div className="text-sm font-medium text-gray-400">Registrace</div>
       </div>
     </nav>
   )
