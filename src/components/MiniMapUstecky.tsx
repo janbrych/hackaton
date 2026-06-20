@@ -3,9 +3,11 @@
 import { useEffect, useRef } from "react";
 
 const PLANTS = [
-  { lat: 50.661, lng: 14.032, name: "H2Age Ústí n. L.", mw: 120, primary: true },
-  { lat: 50.458, lng: 13.418, name: "H2Age Chomutov", mw: 85, primary: false },
-  { lat: 50.503, lng: 13.636, name: "H2Age Most", mw: 60, primary: false },
+  { lat: 50.661, lng: 14.032, name: "Centrum Ústí n. L.", mw: 120, primary: true },
+  { lat: 50.458, lng: 13.418, name: "Průmyslová zóna Chomutov", mw: 85, primary: false },
+  { lat: 50.503, lng: 13.636, name: "Doly Centrum – Most", mw: 60, primary: false },
+  { lat: 50.397, lng: 13.573, name: "Triangle – Žatec", mw: 95, primary: false },
+  { lat: 50.585, lng: 13.820, name: "Elektrárna Počerady", mw: 50, primary: false },
 ];
 
 export default function MiniMapUstecky() {
@@ -64,7 +66,7 @@ export default function MiniMapUstecky() {
               <div style="font-weight:700;font-size:13px;margin-bottom:2px;">${plant.name}</div>
               <div style="font-size:12px;color:#2563eb;font-weight:600;">${plant.mw} MW</div>
             </div>`,
-            { permanent: false, direction: "top", offset: [0, -(size / 2) - 10], className: "leaflet-tooltip-h2age" }
+            { permanent: false, direction: "top", offset: [0, -(size / 2) - 10], className: "leaflet-tooltip-energieuk" }
           );
       });
 
@@ -90,7 +92,7 @@ export default function MiniMapUstecky() {
   return (
     <>
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
-      <style>{`.leaflet-tooltip-h2age { background:transparent!important; border:none!important; box-shadow:none!important; padding:0!important; }`}</style>
+      <style>{`.leaflet-tooltip-energieuk { background:transparent!important; border:none!important; box-shadow:none!important; padding:0!important; }`}</style>
       <div ref={mapRef} style={{ width: "100%", height: "100%" }} />
     </>
   );
